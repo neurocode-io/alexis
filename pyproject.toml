@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "alexis"
+version = "0.1.0"
+description = ""
+authors = ["Bobby Donchev contact@donchev.is"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+transformers = "^4.5.1"
+torch = "^1.8.1"
+redisai = "^1.0.2"
+onnxruntime = "^1.7.0"
+onnx = "^1.8.1"
+
+[tool.poetry.dev-dependencies]
+black = "^20.8b1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
