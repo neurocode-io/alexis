@@ -1,5 +1,4 @@
 from transformers import RobertaTokenizerFast
-import torch
 from redisai import Client
 import numpy as np
 
@@ -31,16 +30,16 @@ def answer(question, content_text):
     )
     input_ids = inputs["input_ids"]
     attention_mask = inputs["attention_mask"]
-    cc = Client(host="localhost", port=6379)
-    cc.tensorset(f"input_ids", input_ids)
-    cc.tensorset(f"attention_mask", attention_mask)
-    cc.modelrun(
+    r = Client(host="localhost", port=6379)
+    r.tensorset(f"input_ids", input_ids)
+    r.tensorset(f"attention_mask", attention_mask)
+    r.modelrun(
         "bert-qa{bob}",
         ["input_ids", "attention_mask"],
         ["answer_start_scores", "answer_end_scores"],
     )
-    answer_start_scores = cc.tensorget(f"answer_start_scores")
-    answer_end_scores = cc.tensorget(f"answer_end_scores")
+    answer_start_scores = r.tensorget(f"answer_start_scores")
+    answer_end_scores = r.tensorget(f"answer_end_scores")
 
     answer_start = np.argmax(answer_start_scores)
     answer_end = np.argmax(answer_end_scores) + 1
