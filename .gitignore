@@ -138,3 +138,8 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# ts-server related
+ts/node_modules
+ts/dist
+ts/.DS_Store

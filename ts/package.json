@@ -1,0 +1,84 @@
+{
+  "name": "alexis-server",
+  "version": "0.0.1",
+  "description": "express server",
+  "author": "Ziad Shaban",
+  "main": "dist/index.js",
+  "scripts": {
+    "prewatch": "npx tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "watch-ts": "tsc -w",
+    "watch-node": "nodemon dist/server.js",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"yarn run watch-ts\" \"yarn run watch-node\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
+  },
+  "dependencies": {
+    "tsc": "^1.20150623.0",
+    "typescript": "^4.0.5",
+    "yarn": "^1.22.10",
+    "@types/express": "^4.17.8",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/jest": "25.1.4",
+    "@types/node": "^13.9.1",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "concurrently": "^5.3.0",
+    "eslint": "^7.24.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.22.1",
+    "husky": "^4.2.5",
+    "jest": "^25.1.0",
+    "lint-staged": "^10.2.2",
+    "nodemon": "^2.0.6",
+    "prettier": "^1.19.1",
+    "ts-jest": "^25.5.0",
+    "ts-loader": "^6.2.1",
+    "ts-node": "^8.6.2",
+    "tsconfig-paths": "^3.9.0"
+  },
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "./src/utils/",
+      "./test/(utils|data)/"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "test",
+    "testMatch": [
+      "**/test/**/?(*.)(spec|test).ts?(x)"
+    ],
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "{src,test}/**/*.{ts,js,json}": [
+      "prettier --write",
+      "eslint --cache --fix"
+    ],
+    "./*.{ts,js,json}": "prettier --write"
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "printWidth": 120,
+    "trailingComma": "all",
+    "endOfLine": "auto"
+  }
+}
