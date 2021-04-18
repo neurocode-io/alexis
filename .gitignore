@@ -144,3 +144,4 @@ ts/node_modules
 ts/dist
 ts/.DS_Store
 ts/.eslintcache
+ts/uploads/
