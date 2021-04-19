@@ -1,0 +1,21 @@
+# Package directories
+node_modules
+jspm_packages
+
+
+# Webpack directories
+.webpack
+
+# Build directories
+build
+dist
+
+# Environment variables
+.env
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+
+# nyc test coverage
+.nyc_output

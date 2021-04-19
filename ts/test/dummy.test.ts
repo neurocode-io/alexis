@@ -1,5 +1,5 @@
 describe('Dummy', () => {
   test('Dummy', () => {
-    console.log('Hi from test');
-  });
-});
+    console.log('Hi from test')
+  })
+})

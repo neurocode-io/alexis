@@ -3,46 +3,41 @@
   "version": "0.0.1",
   "description": "express server",
   "author": "Ziad Shaban",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "prewatch": "npx tsc && node src/build.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "watch-ts": "tsc -w",
-    "watch-node": "nodemon dist/server.js",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"yarn run watch-ts\" \"yarn run watch-node\"",
+    "start": "ts-node-dev --respawn -- src/server.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "postinstall": "env-linter -s -d -l -vs 'node=14.x.x,npm=6.x.x'"
   },
   "dependencies": {
-    "@types/express": "^4.17.8",
-    "@types/multer": "^1.4.5",
     "express": "^4.17.1",
-    "multer": "^1.4.2",
-    "tsc": "^1.20150623.0",
-    "typescript": "^4.0.5",
-    "yarn": "^1.22.10"
+    "multer": "1.4.2"
   },
   "devDependencies": {
+    "@namics/env-linter": "0.4.0",
+    "@types/express": "4.17.11",
     "@types/jest": "25.1.4",
+    "@types/multer": "1.4.5",
     "@types/node": "^13.9.1",
-    "@typescript-eslint/eslint-plugin": "^4.22.0",
-    "@typescript-eslint/parser": "^4.22.0",
-    "concurrently": "^5.3.0",
+    "@typescript-eslint/eslint-plugin": "4.22.0",
+    "@typescript-eslint/parser": "4.22.0",
     "eslint": "^7.24.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-config-prettier": "^6.10.0",
-    "eslint-plugin-import": "^2.22.1",
-    "husky": "^4.2.5",
+    "eslint-config-prettier": "6.15.0",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-security": "1.4.0",
+    "eslint-plugin-simple-import-sort": "7.0.0",
     "jest": "^25.1.0",
     "lint-staged": "^10.2.2",
-    "nodemon": "^2.0.6",
     "prettier": "^1.19.1",
     "ts-jest": "^25.5.0",
     "ts-loader": "^6.2.1",
-    "ts-node": "^8.6.2",
-    "tsconfig-paths": "^3.9.0"
+    "ts-node-dev": "1.1.6",
+    "typescript": "4.2.4"
   },
   "jest": {
     "coveragePathIgnorePatterns": [
@@ -74,13 +69,15 @@
       "prettier --write",
       "eslint --cache --fix"
     ],
-    "./*.{ts,js,json}": "prettier --write"
+    "./*.{ts,js,json}": "prettier --write",
+    "**/package.json": [
+      "env-linter --saveExact --dependenciesExactVersion"
+    ]
   },
   "prettier": {
-    "semi": true,
+    "semi": false,
     "singleQuote": true,
-    "printWidth": 120,
-    "trailingComma": "all",
-    "endOfLine": "auto"
+    "arrowParens": "always",
+    "printWidth": 120
   }
 }

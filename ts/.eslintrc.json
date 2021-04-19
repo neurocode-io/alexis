@@ -3,27 +3,57 @@
     "jest": true,
     "es6": true
   },
-  "extends": ["airbnb-base"],
-  "globals": {
-    "Atomics": "readonly",
-    "SharedArrayBuffer": "readonly"
-  },
+  "root": true,
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 2018,
-    "sourceType": "module"
+    "project": ["tsconfig.json"]
   },
-  "plugins": ["@typescript-eslint"],
+  "ignorePatterns": [".serverless", "build", "dist"],
+  "plugins": ["@typescript-eslint", "import", "simple-import-sort", "security"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "prettier",
+    "plugin:security/recommended"
+  ],
   "rules": {
-    "no-console": "off",
-    "import/prefer-default-export": "off",
-    "import/extensions": "off"
-  },
-  "settings": {
-    "import/resolver": {
-      "node": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+    "semi": "off",
+    "@typescript-eslint/semi": "off",
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    "sort-imports": "off",
+    "import/first": "error",
+    "import/newline-after-import": "error",
+    "import/no-duplicates": "error",
+    // Does not correctly resolve @types when trying to import
+    // type definitions only. TypeScript already performs this check.
+    "import/no-unresolved": "off",
+    "padding-line-between-statements": [
+      "error",
+      {
+        "blankLine": "always",
+        "prev": "*",
+        "next": "return"
+      },
+      { "blankLine": "always", "prev": ["const", "let"], "next": "*" },
+      { "blankLine": "always", "prev": ["const"], "next": ["if"] },
+      { "blankLine": "always", "prev": ["if"], "next": ["const"] },
+      {
+        "blankLine": "any",
+        "prev": ["const", "let"],
+        "next": ["const", "let"]
       }
-    }
+    ],
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ]
   }
 }
