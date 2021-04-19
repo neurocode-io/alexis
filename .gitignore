@@ -16,8 +16,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
 parts/
 sdist/
 var/
@@ -140,8 +138,8 @@ dmypy.json
 cython_debug/
 
 # ts-server related
-ts/node_modules
-ts/dist
-ts/.DS_Store
-ts/.eslintcache
-ts/uploads/
+node_modules/
+dist/
+.DS_Store/
+.eslintcache/
+uploads/
