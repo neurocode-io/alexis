@@ -1,8 +1,18 @@
 import express, { Request, Response } from 'express'
 import multer from 'multer'
 
+const storage = multer.diskStorage({
+  destination: 'uploads/',
+  filename: function (_, file, callback) {
+    callback(null, file.originalname)
+  },
+})
+
 const upload = multer({
-  dest: 'uploads/',
+  storage,
+  limits: {
+    fileSize: 30 * 1e6, // 30MB
+  },
 })
 
 const app = express()
