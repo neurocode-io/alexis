@@ -24,16 +24,16 @@ const app = express()
 app.use(express.json())
 const redis = new Redis()
 
-void loadPdfFromUrl(`${__dirname}/../test-files/book.pdf`)
-
-app.set('port', config.PORT);
-
-app.get('/', (_req: Request, res: Response) => {
-  res.sendFile(`${__dirname}/index.html`)
+void loadPdfFromUrl(`${__dirname}/../test-files/book.pdf`).then(() => {
+  app.get('/', (_req: Request, res: Response) => {
+    res.sendFile(`${__dirname}/index.html`)
+  })
 })
 
+app.set('port', config.PORT)
+
 app.get('/pdf/:page', async (req: Request, res: Response) => {
-  res.send((await redis.hgetall(req.params.page ? req.params.page  : "0")).value)
+  res.send((await redis.hgetall(req.params.page ? req.params.page  : '0')).values)
 })
 
 app.post('/', upload.single('file-to-upload'), (_req: Request, res: Response) => {

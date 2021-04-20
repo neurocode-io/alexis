@@ -3,19 +3,19 @@ import Redis from 'ioredis'
 
 import { getText } from './lib/pdf'
 
-const r = new Redis()
-const p = r.pipeline()
+const redis = new Redis()
+const pipeline = redis.pipeline()
 
 export const loadPdf = async (data: Buffer) => {
   for await (const page of getText(data)) {
     const key = page.page.toString()
-    const data = page.content;
-
-    p.hset(key, data);
+    const values = page.content
+    
+    pipeline.hset(key, {values})
   }
 
-  void p.exec()
-  void r.quit()
+  void pipeline.exec()
+  void redis.quit()
 }
 
 export const loadPdfFromUrl = async (url: string) => {
