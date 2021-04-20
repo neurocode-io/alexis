@@ -30,6 +30,7 @@
     "import/first": "error",
     "import/newline-after-import": "error",
     "import/no-duplicates": "error",
+    "@typescript-eslint/no-misused-promises": "off",
     // Does not correctly resolve @types when trying to import
     // type definitions only. TypeScript already performs this check.
     "import/no-unresolved": "off",
