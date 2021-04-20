@@ -1,5 +1,6 @@
-import { getText } from './pdf'
 import * as fs from 'fs'
+
+import { getText } from './pdf'
 
 describe('pdf', () => {
   describe('getText', () => {
@@ -10,6 +11,13 @@ describe('pdf', () => {
         expect(obj).toHaveProperty('page')
         expect(obj).toHaveProperty('content')
       }
+    })
+    it('should not extract from invalid PDF', () => {
+      const pdfContent = Buffer.from('hello world')
+
+      getText(pdfContent)
+        .next()
+        .catch((e) => expect(e).toMatch('error'))
     })
   })
 })

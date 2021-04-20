@@ -50,10 +50,8 @@
     ],
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "testPathIgnorePatterns": [
-      "<rootDir>/src/server.ts"
+      "src/**/*.ts",
+      "!src/server.ts"
     ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
