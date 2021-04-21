@@ -5,7 +5,7 @@ import { serverConfig } from '../config'
 const log = pino({
   prettyPrint: process.env.NODE_ENV !== 'production',
   timestamp: stdTimeFunctions.isoTime,
-  level: serverConfig.logLevel,
+  level: serverConfig.logLevel
 })
 
 export default log
