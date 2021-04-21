@@ -2,15 +2,17 @@
   "name": "alexis",
   "version": "0.1.0",
   "description": "alexis for now",
-  "main": "dist/server.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "dotenv -e dev.env -- ts-node-dev --respawn -- src/server.ts",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "dotenv -e dev.env -- jest",
-    "test:watch": "dotenv -e dev.env -- jest --watch",
-    "test:cov": "dotenv -e dev.env -- jest --coverage",
+    "format": "prettier --write \"./**/*.ts\"",
+    "server": "dotenv -e server/dev.env -- ts-node-dev --respawn -- server/index.ts",
+    "redis": "docker-compose up",
+    "start": "run-p redis server",
+    "lint": "eslint \"./**/*.ts\" --fix",
+    "test": "dotenv -e server/dev.env -- jest",
+    "test:watch": "dotenv -e server/dev.env -- jest --watch",
+    "test:cov": "dotenv -e server/dev.env -- jest --coverage",
     "postinstall": "env-linter -s -d -l -vs 'node=12.x.x,npm=6.x.x'"
   },
   "dependencies": {
@@ -39,6 +41,7 @@
     "eslint-plugin-simple-import-sort": "7.0.0",
     "jest": "26.6.3",
     "lint-staged": "10.2.2",
+    "npm-run-all": "4.1.5",
     "pino-pretty": "4.7.1",
     "prettier": "1.19.1",
     "ts-jest": "26.5.5",
@@ -52,8 +55,8 @@
     ],
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!src/server.ts"
+      "./**/*.ts",
+      "!server/index.ts"
     ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
@@ -79,7 +82,7 @@
     }
   },
   "lint-staged": {
-    "{src,test}/**/*.{ts,js,json}": [
+    "./**/*.{ts,js,json}": [
       "prettier --write",
       "eslint --cache --fix"
     ],

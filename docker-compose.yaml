@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7'
 
 services:
   redis:
@@ -8,8 +8,8 @@ services:
     build:
       context: redis/
     command: [
-        "sh",
-        "-c",
+        'sh',
+        '-c',
         "redis-server \
         --loadmodule /usr/lib/redis/modules/redisai.so \
         --loadmodule /usr/lib/redis/modules/redisearch.so \
@@ -19,7 +19,7 @@ services:
         --save ''",
       ]
     env_file:
-      - ./ts/.env
+      - ./server/dev.env
 
   redisinsight:
     image: redislabs/redisinsight:latest
