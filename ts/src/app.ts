@@ -2,21 +2,19 @@ import express, { Request, Response } from 'express'
 import Redis from 'ioredis'
 import multer from 'multer'
 
-import { config } from './config';
+import { serverConfig } from './config'
 import { loadPdfFromUrl } from './load'
 
 const storage = multer.diskStorage({
   destination: 'uploads/',
-  filename: function (_, file, callback) {
-    callback(null, file.originalname)
-  },
+  filename: (_, file, callback) => callback(null, file.originalname)
 })
 
 const upload = multer({
   storage,
   limits: {
-    fileSize: 30 * 1e6, // 30MB
-  },
+    fileSize: 30 * 1e6 // 30MB
+  }
 })
 
 const app = express()
@@ -30,7 +28,7 @@ void loadPdfFromUrl(`${__dirname}/../test-files/book.pdf`).then(() => {
   })
 })
 
-app.set('port', config.PORT)
+app.set('port', serverConfig.port)
 
 app.get('/pdf/:page', async (req: Request, res: Response) => {
   res.send((await redis.hgetall(req.params.page ? req.params.page  : '0')).values)

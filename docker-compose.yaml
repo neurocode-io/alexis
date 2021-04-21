@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  redis:
+    init: true
+    ports:
+      - 6379:6379
+    build:
+      context: redis/
+    command: [
+        "sh",
+        "-c",
+        "redis-server \
+        --loadmodule /usr/lib/redis/modules/redisai.so \
+        --loadmodule /usr/lib/redis/modules/redisearch.so \
+        --loadmodule /usr/lib/redis/modules/rejson.so \
+        --requirepass $${REDIS_PASSWORD} \
+        --appendonly no \
+        --save ''",
+      ]
+    env_file:
+      - ./ts/.env
+
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    init: true
+    ports:
+      - 8001:8001
