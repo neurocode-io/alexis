@@ -11,7 +11,7 @@
     "test": "dotenv -e dev.env -- jest",
     "test:watch": "dotenv -e dev.env -- jest --watch",
     "test:cov": "dotenv -e dev.env -- jest --coverage",
-    "postinstall": "env-linter -s -d -l -vs 'node=14.x.x,npm=6.x.x'"
+    "postinstall": "env-linter -s -d -l -vs 'node=12.x.x,npm=6.x.x'"
   },
   "dependencies": {
     "env-var": "7.0.0",
@@ -19,7 +19,8 @@
     "file-type": "16.3.0",
     "multer": "1.4.2",
     "pdfjs-dist": "2.7.570",
-    "pino": "6.11.3"
+    "pino": "6.11.3",
+    "tokenizers": "0.7.0"
   },
   "devDependencies": {
     "@namics/env-linter": "0.4.0",
