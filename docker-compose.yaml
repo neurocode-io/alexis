@@ -1,0 +1,15 @@
+version: "3.7"
+
+services:
+  redis:
+    init: true
+    ports:
+      - 6379:6379
+    build:
+      context: redis/
+
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    init: true
+    ports:
+      - 8001:8001

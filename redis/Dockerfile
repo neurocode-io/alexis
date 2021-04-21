@@ -1,0 +1,21 @@
+FROM redislabs/redisai:edge-cpu as redisai
+FROM redislabs/redisearch:latest as redisearch
+FROM redislabs/rejson:latest as rejson
+
+ENV LD_LIBRARY_PATH /usr/lib/redis/modules
+
+
+WORKDIR /data
+
+COPY --from=redisai ${LD_LIBRARY_PATH}/redisai.so ${LD_LIBRARY_PATH}/
+COPY --from=redisai ${LD_LIBRARY_PATH}/backends ${LD_LIBRARY_PATH}/backends
+COPY --from=redisearch ${LD_LIBRARY_PATH}/redisearch.so ${LD_LIBRARY_PATH}/
+
+
+ENTRYPOINT ["redis-server"]
+
+CMD ["--loadmodule", "/usr/lib/redis/modules/redisai.so", \
+  "--loadmodule", "/usr/lib/redis/modules/redisearch.so", \
+  "--loadmodule", "/usr/lib/redis/modules/rejson.so", \
+  "--appendonly", "no", \
+  "--save ''"]
