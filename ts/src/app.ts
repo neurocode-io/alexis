@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express'
 import multer from 'multer'
 
+import { serverConfig } from './config'
+
 const storage = multer.diskStorage({
   destination: 'uploads/',
   filename: function (_, file, callback) {
@@ -17,7 +19,7 @@ const upload = multer({
 
 const app = express()
 
-app.set('port', process.env.PORT || 3000)
+app.set('port', serverConfig.port)
 
 app.get('/', (_req: Request, res: Response) => {
   res.sendFile(`${__dirname}/index.html`)
