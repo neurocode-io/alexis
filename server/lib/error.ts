@@ -22,7 +22,7 @@ class APIerror extends Error {
   }
 
   public serialize() {
-    return JSON.stringify({ error: { ...this, msg: this.message } })
+    return JSON.stringify({ error: { name: this.name, msg: this.message, code: this.code, retryable: this.retryable } })
   }
 }
 
@@ -30,4 +30,4 @@ const createError = (opts: ErrorInput) => {
   throw new APIerror(opts)
 }
 
-export { createError }
+export { APIerror, createError }
