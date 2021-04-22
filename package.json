@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"./**/*.ts\"",
+    "repl": "dotenv -e server/dev.env node",
     "server": "dotenv -e server/dev.env -- ts-node-dev --respawn -- server/index.ts",
     "redis": "docker-compose up",
     "start": "run-p redis server",
