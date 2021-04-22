@@ -15,7 +15,7 @@ const initTokenizer = async (maxLength: number) => {
     eosToken: '</s>',
     maskToken: new AddedToken('<mask>', true, { leftStrip: true }),
     padToken: '<pad>',
-    unkToken: '<unk>',
+    unkToken: '<unk>'
   }
 
   await Promise.all([fs.stat(merges), fs.stat(vocab)]).catch(createError(errors.tokenizerMissingFiles))
@@ -23,14 +23,14 @@ const initTokenizer = async (maxLength: number) => {
   tokenizer = await ByteLevelBPETokenizer.fromOptions({
     addPrefixSpace: true,
     mergesFile: merges,
-    vocabFile: vocab,
+    vocabFile: vocab
   })
 
   tokenizer.addSpecialTokens(Object.values(specialTokens))
   tokenizer.setPadding({
     maxLength,
     padToken: specialTokens.padToken,
-    padId: tokenizer.tokenToId(specialTokens.padToken),
+    padId: tokenizer.tokenToId(specialTokens.padToken)
   })
   tokenizer.setTruncation(maxLength, { strategy: TruncationStrategy.OnlySecond })
 }
