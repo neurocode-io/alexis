@@ -5,14 +5,14 @@ import { serverConfig } from './config'
 
 const storage = multer.diskStorage({
   destination: 'uploads/',
-  filename: (_, file, callback) => callback(null, file.originalname),
+  filename: (_, file, callback) => callback(null, file.originalname)
 })
 
 const upload = multer({
   storage,
   limits: {
-    fileSize: 30 * 1e6, // 30MB
-  },
+    fileSize: 30 * 1e6 // 30MB
+  }
 })
 
 const app = express()

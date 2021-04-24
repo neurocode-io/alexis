@@ -1,4 +1,4 @@
-import { loadModel } from './inference'
+import { loadModel, MODEL_NAME } from './inference'
 
 describe('answering/inference', () => {
   it('should load the model', async () => {
@@ -10,10 +10,10 @@ describe('answering/inference', () => {
       device: 'CPU',
       duration: 0,
       errors: 0,
-      key: 'qamodel',
+      key: MODEL_NAME,
       samples: 0,
       tag: '',
-      type: 'MODEL',
+      type: 'MODEL'
     })
   })
 })
