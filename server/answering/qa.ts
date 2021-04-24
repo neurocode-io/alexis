@@ -1,4 +1,3 @@
-/* eslint-disable security/detect-object-injection */
 import { runInference } from './inference'
 import { decode, encode } from './tokenizer'
 
@@ -10,9 +9,13 @@ const softMax = (values: number[]): number[] => {
   return exps.map((e) => e / expsSum)
 }
 
-function argMax(array: number[]) {
-  // eslint-disable-next-line security/detect-object-injection
-  return [].reduce.call(array, (m, c, i, arr) => (c > (arr[m as number] || 0) ? i : m), 0) as number
+const argMax = (array: number[]) =>
+  [].reduce.call(array, (m, c, i, arr) => (c > (arr[m as number] || 0) ? i : m), 0) as number
+
+const clean = (answer: string) => {
+  const [firstLetter, ...rest] = answer.trim()
+
+  return `${firstLetter?.toUpperCase()}${rest.join('')}`
 }
 
 const getAnswer = async (question: string, context: string) => {
@@ -28,10 +31,10 @@ const getAnswer = async (question: string, context: string) => {
 
   const probScore = (startProbs[startIdx] ?? 0) * (endProbs[endIdx] ?? 0)
 
-  const answer = await decode(encoded.ids, startIdx, endIdx)
+  const answer = await decode(encoded.ids, startIdx, endIdx + 1)
 
   return {
-    answer: answer.trim(),
+    answer: clean(answer),
     probScore: Math.round((probScore + Number.EPSILON) * 100) / 100,
   }
 }
