@@ -8,7 +8,7 @@ const redisConfig = {
   port: env
     .get('REDIS_PORT')
     .required()
-    .asString(),
+    .asInt(),
   password: env
     .get('REDIS_PASSWORD')
     .required()
