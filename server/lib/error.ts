@@ -8,8 +8,9 @@ type ErrorInput = {
 class APIerror extends Error {
   private code: number
   private retryable: boolean
+  private newStack: string
 
-  constructor(error: ErrorInput) {
+  constructor(error: ErrorInput, orgError?: Error) {
     super(error.msg)
 
     if (Error.captureStackTrace) {
@@ -19,6 +20,14 @@ class APIerror extends Error {
     this.name = error.name
     this.code = error.code
     this.retryable = error.retryable
+    this.newStack = String(this.stack)
+    const messageLines = (this.message.match(/\n/g) || []).length + 1
+
+    this.stack = `${this.newStack
+      .split('\n')
+      .slice(0, messageLines + 1)
+      .join('\n')}
+        \n${orgError?.stack || ''}`
   }
 
   public serialize() {
@@ -26,8 +35,8 @@ class APIerror extends Error {
   }
 }
 
-const createError = (opts: ErrorInput) => {
-  throw new APIerror(opts)
+const createError = (opts: ErrorInput, orgError?: Error) => {
+  throw new APIerror(opts, orgError)
 }
 
 export { APIerror, createError }

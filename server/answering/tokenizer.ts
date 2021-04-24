@@ -18,7 +18,7 @@ const initTokenizer = async (maxLength: number) => {
   const merges = path.join(__dirname, 'onnx_model', 'merges.txt')
   const vocab = path.join(__dirname, 'onnx_model', 'vocab.json')
 
-  await Promise.all([fs.stat(merges), fs.stat(vocab)]).catch(() => createError(errors.tokenizerMissingFiles))
+  await Promise.all([fs.stat(merges), fs.stat(vocab)]).catch((e) => createError(errors.tokenizerMissingFiles, e))
 
   tokenizer = await ByteLevelBPETokenizer.fromOptions({
     addPrefixSpace: true,
@@ -39,9 +39,13 @@ const encode = async (question: string, context: string, maxLength = 512) => {
   if (!tokenizer) await initTokenizer(maxLength)
 
   return tokenizer.encode(
-    `${specialTokens.clsToken}${question}${specialTokens.clsToken}`,
-    `${specialTokens.clsToken}${context}${specialTokens.clsToken}`
+    `${specialTokens.clsToken}${question}${specialTokens.eosToken}`,
+    `${specialTokens.eosToken}${context}${specialTokens.eosToken}`
   )
+}
+
+const decode = async (encodingIds: number[]) => {
+  tokenizer.decode()
 }
 
 export { encode }

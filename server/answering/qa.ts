@@ -1,47 +1,37 @@
-import { promises as fs } from 'fs'
-import path from 'path'
-
-import r from '../lib/redis'
+/* eslint-disable security/detect-object-injection */
+import { runInference } from './inference'
 import { encode } from './tokenizer'
 
-type AiOutput = {
-  [key: string]: string | number
+function softMax(values: number[]): number[] {
+  const max = Math.max(...values)
+  const exps = values.map((x) => Math.exp(x - max))
+  const expsSum = exps.reduce((a, b) => a + b)
+
+  return exps.map((e) => e / expsSum)
 }
 
-export const initQA = async () => {
-  const QAmodel = path.join(__dirname, 'onnx_model', 'ro-optimized-quantized.onnx')
-  const qa = await fs.readFile(QAmodel)
-
-  await r.send_command('AI.MODELSET', 'qamodel', 'ONNX', 'CPU', 'BLOB', qa)
-
-  return r.send_command('AI.INFO', 'qamodel') as Promise<AiOutput>
+function argMax(array: number[]) {
+  // eslint-disable-next-line security/detect-object-injection
+  return [].reduce.call(array, (m, c, i, arr) => (c > arr[m] ? i : m), 0) as number
 }
 
 const getAnswer = async (question: string, context: string) => {
   const encoded = await encode(question, context)
 
-  await r.send_command('AI.TENSORSET', 'enc_input_ids', 'int64', 1, 512, 'VALUES', encoded.ids)
-  await r.send_command('AI.TENSORSET', 'enc_attention_mask', 'int64', 1, 512, 'VALUES', encoded.attentionMask)
+  const { ansStart, ansEnd } = await runInference(encoded.ids, encoded.attentionMask)
 
-  await r.send_command(
-    'AI.MODELRUN',
-    'qamodel',
-    'TIMEOUT',
-    3000,
-    'INPUTS',
-    'enc_input_ids',
-    'enc_attention_mask',
-    'OUTPUTS',
-    'enc_answer_start_scores',
-    'enc_answer_end_scores'
-  )
+  const startProbs = softMax(ansStart)
+  const endProbs = softMax(ansEnd)
 
-  const ansStrt = await r.send_command('AI.TENSORGET', 'enc_answer_start_scores', 'VALUES')
-  const ansEnd = await r.send_command('AI.TENSORGET', 'enc_answer_end_scores', 'VALUES')
+  const startIdx = argMax(ansStart)
+  const endIdx = argMax(ansEnd)
+
+  const probScore = (startProbs[startIdx] ?? 0) * (endProbs[endIdx] ?? 0)
 
   return {
-    ansStrt,
-    ansEnd,
+    startIdx,
+    endIdx,
+    probScore,
   }
 }
 
