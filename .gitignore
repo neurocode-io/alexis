@@ -145,3 +145,4 @@ dist/
 uploads/
 .env
 dump.rdb
+server/lastID
