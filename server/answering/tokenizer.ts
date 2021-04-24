@@ -44,8 +44,10 @@ const encode = async (question: string, context: string, maxLength = 512) => {
   )
 }
 
-const decode = async (encodingIds: number[]) => {
-  tokenizer.decode()
+const decode = async (encodingIds: number[], start: number, end: number, maxLength = 512) => {
+  if (!tokenizer) await initTokenizer(maxLength)
+
+  return tokenizer.decode(encodingIds.slice(start, end))
 }
 
-export { encode }
+export { decode, encode }

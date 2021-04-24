@@ -1,7 +1,7 @@
 import { loadModel } from './inference'
 
 describe('answering/inference', () => {
-  it.skip('should load the model', async () => {
+  it('should load the model', async () => {
     const resp = await loadModel()
 
     expect(resp).toEqual({
