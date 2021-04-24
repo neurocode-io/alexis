@@ -144,3 +144,4 @@ dist/
 .eslintcache
 uploads/
 .env
+dump.rdb
