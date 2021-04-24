@@ -17,7 +17,7 @@ describe('pdf', () => {
 
       getText(pdfContent)
         .next()
-        .catch((e) => expect(e).toMatch('error'))
+        .catch((e: Error) => expect(e.message).toEqual('Not a PDF file'))
     })
   })
 })
