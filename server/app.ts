@@ -22,10 +22,9 @@ const app = express()
 app.use(express.json())
 const redis = new Redis()
 
-void loadPdfFromUrl(`${__dirname}/../test-files/book.pdf`).then(() => {
-  app.get('/', (_req: Request, res: Response) => {
-    res.sendFile(`${__dirname}/index.html`)
-  })
+void loadPdfFromUrl(`${__dirname}/../test-files/book.pdf`)
+app.get('/', (_req: Request, res: Response) => {
+  res.sendFile(`${__dirname}/index.html`)
 })
 
 app.set('port', serverConfig.port)

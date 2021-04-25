@@ -16,14 +16,12 @@ export const loadPdf = async (data: Buffer) => {
     if (keyFinder.get(pageNumber)) {
       logger.error(`key ${pageNumber} already exists. Duplicate keys are not allowed`)
     }
-    keyFinder.set(pageNumber, await redis.xadd("pdfStream", "*", "pageNumber", pageNumber, "content", content))
+    keyFinder.set(pageNumber, await redis.xadd('pdfStream', '*', 'pageNumber', pageNumber, 'content', content))
   }
-
-  void redis.quit()
 }
 
-export const loadPdfFromUrl = async (url: string) => {
-  const data = fs.readFileSync(url)
-
-  return loadPdf(data)
+export const loadPdfFromUrl = (url: string) => {
+  fs.readFile(url, (_err, data) => {
+    void loadPdf(data)
+  })
 }
