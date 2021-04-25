@@ -1,4 +1,7 @@
+import { loadModel } from './inference'
 import { getAnswer } from './qa'
+
+beforeAll(async () => await loadModel())
 
 describe('answering/qa', () => {
   it('should answer the question given the context', async () => {
