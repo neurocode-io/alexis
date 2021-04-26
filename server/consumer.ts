@@ -1,16 +1,14 @@
 import fs from 'fs'
 import Redis from 'ioredis'
 
+import { redisConfig } from './config'
 import log from './lib/log'
 
 const redis = new Redis()
-const streamName = 'pdfStream'
-let groupName: string
 
-export const createConsumerGroup = async (groupname: string) => {
-    await redis.xgroup('DESTROY', streamName, groupName)
-    groupName = groupname
-    await redis.xgroup('CREATE', streamName, groupName, '0-0', 'MKSTREAM')
+export const createConsumerGroup = async () => {
+    await redis.xgroup('DESTROY', redisConfig.streamName, redisConfig.consumerGroupName)
+    await redis.xgroup('CREATE', redisConfig.streamName, redisConfig.consumerGroupName, '0-0', 'MKSTREAM')
 }
 
 export const startConsumer = (consumerName: string) => {
@@ -29,7 +27,8 @@ export const startConsumer = (consumerName: string) => {
             lastID = data
         }
         
-        const result = await redis.xreadgroup('GROUP', groupName, consumerName, 'BLOCK', '0', 'COUNT', '1', 'STREAMS', streamName, lastID)
+        const result = await redis.xreadgroup('GROUP', redisConfig.consumerGroupName, consumerName, 'BLOCK', '0', 'COUNT', '1', 'STREAMS', redisConfig.streamName, lastID)
+
         console.log(result)
         checkBacklog = result[0]![1].length !== 0
         if (!checkBacklog){
@@ -51,7 +50,7 @@ export const startConsumer = (consumerName: string) => {
             console.log(content)
             console.log(counter++)
 
-            await redis.xack(streamName, groupName, lastID as string)
+            await redis.xack(redisConfig.streamName, redisConfig.consumerGroupName, lastID as string)
         
             setTimeout(start, 0)
         })

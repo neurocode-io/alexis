@@ -2,7 +2,7 @@ import { app } from './app'
 import { createConsumerGroup, startConsumer } from './consumer'
 import logger from './lib/log'
 
-void createConsumerGroup('pdfGroup').then(() => {
+void createConsumerGroup().then(() => {
   void startConsumer('pdfTest');
 })
 

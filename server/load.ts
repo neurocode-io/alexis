@@ -2,6 +2,7 @@ import fs from 'fs'
 import Redis from 'ioredis'
 
 import { keyFinder } from './keyFinder'
+import { redisConfig } from './config'
 import logger from './lib/log'
 import { getText } from './lib/pdf'
 
@@ -16,7 +17,7 @@ export const loadPdf = async (data: Buffer) => {
     if (keyFinder.get(pageNumber)) {
       logger.error(`key ${pageNumber} already exists. Duplicate keys are not allowed`)
     }
-    keyFinder.set(pageNumber, await redis.xadd('pdfStream', '*', 'pageNumber', pageNumber, 'content', content))
+    keyFinder.set(pageNumber, await redis.xadd(redisConfig.streamName, '*', 'pageNumber', pageNumber, 'content', content))
   }
 }
 
