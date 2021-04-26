@@ -39,7 +39,7 @@ export const startConsumer = (consumerName: string) => {
         }
         
         lastID = result[0]![1]![0]![0]
-        fs.writeFile(idFileURI, lastID, (err) => {
+        fs.writeFile(idFileURI, lastID, async (err) => {
             console.log(`last id: ${lastID}`)
             if (err) {
                 log.error(err)
@@ -50,6 +50,8 @@ export const startConsumer = (consumerName: string) => {
             console.log(lastID)
             console.log(content)
             console.log(counter++)
+
+            await redis.xack(streamName, groupName, lastID as string)
         
             setTimeout(start, 0)
         })
