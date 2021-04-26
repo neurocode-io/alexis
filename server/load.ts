@@ -1,8 +1,8 @@
 import fs from 'fs'
 import Redis from 'ioredis'
 
-import { keyFinder } from './keyFinder'
 import { redisConfig } from './config'
+import { keyFinder } from './keyFinder'
 import logger from './lib/log'
 import { getText } from './lib/pdf'
 
