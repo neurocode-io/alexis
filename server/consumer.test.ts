@@ -1,13 +1,17 @@
 import Redis from 'ioredis'
 
 import { redisConfig } from './config'
-import { createConsumerGroup, destroyConsumerGroup } from './consumer'
+import { createConsumerGroup, destroyConsumerGroup, startConsumer } from './consumer'
 
 const redis = new Redis()
 
 describe('consumer', () => {
   afterAll(async () => {
     await redis.quit()
+  })
+
+  beforeEach(() => {
+      console.log('hi')
   })
 
   describe('createConsumerGroup', () => {
@@ -17,20 +21,16 @@ describe('consumer', () => {
 
     it('should not throw when there is no group', async () => {
       try {
-        const disabledGroups = await destroyConsumerGroup()
-
-        expect(disabledGroups).toEqual(0)
+        expect(await destroyConsumerGroup()).toEqual(0)
       } catch (err) {
         throw new Error(err)
       }
     })
 
     it('should disable group', async () => {
-      await redis.xgroup('CREATE', redisConfig.streamName, redisConfig.consumerGroupName, '0-0')
-      try {
-        const disabledGroups = await destroyConsumerGroup()
-
-        expect(disabledGroups).toEqual(1)
+        try {
+        await redis.xgroup('CREATE', redisConfig.streamName, redisConfig.consumerGroupName, '0-0')
+        expect(await destroyConsumerGroup()).toEqual(1)
       } catch (err) {
         throw new Error(err)
       }
@@ -61,6 +61,28 @@ describe('consumer', () => {
         await createConsumerGroup()
         expect(await destroyConsumerGroup()).toEqual(1)
       } catch (err) {
+        throw new Error(err)
+      }
+    })
+  })
+
+  describe('startConsumer', () => {
+    it('should throw when no group was created', async () => {
+      await destroyConsumerGroup()
+      await expect(startConsumer('test')).rejects.toThrowError()
+    })
+
+    it('should create cnosumers', async () => {
+        try {
+        await redis.xgroup('CREATE', redisConfig.streamName, redisConfig.consumerGroupName, '0-0')
+        await startConsumer('test1')
+        const info = await redis.xinfo('CONSUMERS', redisConfig.streamName, redisConfig.consumerGroupName)
+
+        console.log(info)
+        expect(info[0]![1]).toEqual('test1')
+        await destroyConsumerGroup()
+      } catch (err) {
+        await destroyConsumerGroup()
         throw new Error(err)
       }
     })
