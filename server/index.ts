@@ -2,9 +2,8 @@ import { app } from './app'
 import { createConsumerGroup, startConsumer } from './consumer'
 import logger from './lib/log'
 
-void createConsumerGroup()
-.then(() => {
-  startConsumer('pdfTest');
+void createConsumerGroup().then(() => {
+  startConsumer('pdfTest')
 })
 
 app.listen(app.get('port'), () => {
