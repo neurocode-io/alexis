@@ -3,8 +3,8 @@ import Redis from 'ioredis'
 import { redisConfig } from './config'
 
 const redis = new Redis()
-let consumerGruopPromiseResolver: (value?: unknown) => void
-let consumerGruopPromise: Promise<unknown>
+let consumerGruopPromiseResolver: ((value?: unknown) => void) | null
+let consumerGruopPromise: Promise<unknown> | null
 
 const createConsumerGroupInternal = async () => {
   const streamExists = (await redis.xlen(redisConfig.streamName)) !== 0
@@ -13,13 +13,12 @@ const createConsumerGroupInternal = async () => {
     try {
       await redis.xgroup('DESTROY', redisConfig.streamName, redisConfig.consumerGroupName)
       await redis.xgroup('CREATE', redisConfig.streamName, redisConfig.consumerGroupName, '0-0')
+      void (consumerGruopPromiseResolver as (value?: unknown) => void)()
     } catch {
       setTimeout(createConsumerGroupInternal, 10)
 
       return
     }
-
-    consumerGruopPromiseResolver()
   } else {
     setTimeout(createConsumerGroupInternal, 10)
   }
@@ -27,18 +26,29 @@ const createConsumerGroupInternal = async () => {
 
 export const createConsumerGroup = async () => {
   const awaitConsumerGruopPromise = async () => {
-    consumerGruopPromise =
-      consumerGruopPromise ||
-      new Promise((resolve) => {
-        consumerGruopPromiseResolver = resolve
-      })
-
-    await consumerGruopPromise
+    await new Promise((resolve) => {
+      consumerGruopPromiseResolver = resolve
+    })
   }
 
-  void createConsumerGroupInternal()
+  if (!consumerGruopPromise) {
+    void createConsumerGroupInternal()
+  }
 
-  return awaitConsumerGruopPromise()
+  consumerGruopPromise = consumerGruopPromise || awaitConsumerGruopPromise()
+
+  return consumerGruopPromise
+}
+
+export const destroyConsumerGroup = async () => {
+  if (consumerGruopPromiseResolver) {
+    consumerGruopPromiseResolver()
+  }
+
+  consumerGruopPromiseResolver = null
+  consumerGruopPromise = null
+
+  return redis.xgroup('DESTROY', redisConfig.streamName, redisConfig.consumerGroupName)
 }
 
 export const startConsumer = (consumerName: string) => {
