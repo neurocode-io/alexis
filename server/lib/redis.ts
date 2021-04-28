@@ -26,4 +26,7 @@ Redis.Command.setReplyTransformer('AI.INFO', (result: unknown[]) => {
   return result
 })
 
+export const key = (id: string) => `${redisConfig.namespace}:${id}`
+export const idx = (id: string) => `${redisConfig.namespace}:idx:${id}`
+
 export default redis

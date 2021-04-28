@@ -23,8 +23,9 @@ async function* getText(data: Buffer) {
   for (let i = 1; i <= maxPages; i++) {
     const page = await pdf.getPage(i)
     const text = await page.getTextContent()
+    const content = text.items.map((item: { str: string }) => item.str).join(' ')
 
-    yield { page: i, content: text.items.map((item: { str: string }) => item.str).join(' ') }
+    yield { id: pdf.fingerprint, page: i, content }
   }
 }
 

@@ -1,7 +1,7 @@
 // https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping
 {
   "compilerOptions": {
-    "lib": ["es2020"],
+    "lib": ["ES2019"],
     "removeComments": true,
     "module": "CommonJS",
     "moduleResolution": "node",
@@ -14,6 +14,7 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "alwaysStrict": true,
+    "strictNullChecks": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
