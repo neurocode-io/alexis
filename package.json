@@ -6,12 +6,15 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write \"./**/*.ts\"",
+    "repl": "dotenv -e server/dev.env node",
     "server": "dotenv -e server/dev.env -- ts-node-dev --respawn -- server/index.ts",
     "redis": "docker-compose up",
     "start": "run-p redis server",
     "lint": "eslint \"./**/*.ts\" --fix",
-    "test": "dotenv -e server/dev.env -- jest",
-    "test:watch": "dotenv -e server/dev.env -- jest --watch",
+    "pretest": "docker-compose up -d redis",
+    "test": "dotenv -e server/dev.env -- jest ; docker-compose down",
+    "pretest:watch": "npm run pretest",
+    "test:watch": "dotenv -e server/dev.env -- jest --watch ; docker-compose down",
     "test:cov": "dotenv -e server/dev.env -- jest --coverage",
     "postinstall": "env-linter -s -d -l -vs 'node=12.x.x,npm=6.x.x'"
   },
@@ -19,6 +22,7 @@
     "env-var": "7.0.0",
     "express": "4.17.1",
     "file-type": "16.3.0",
+    "ioredis": "4.26.0",
     "multer": "1.4.2",
     "pdfjs-dist": "2.7.570",
     "pino": "6.11.3",
@@ -97,6 +101,7 @@
     "semi": false,
     "singleQuote": true,
     "arrowParens": "always",
-    "printWidth": 120
+    "printWidth": 120,
+    "trailingComma": "none"
   }
 }
