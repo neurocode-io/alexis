@@ -16,6 +16,11 @@ const isSentence = (sentence: string) => {
 
 //remove any whitespace symbols: spaces, tabs, and line breaks
 const cleanText = (text: string) =>
-  text.replace(/\s+/g, ' ').trim().replace(/‐ /g, '').replace(/- /g, '').replace(/’/g, `'`)
+  text
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/‐ /g, '')
+    .replace(/- /g, '')
+    .replace(/’/g, `'`)
 
 export { cleanText, isSentence }
