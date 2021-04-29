@@ -1,12 +1,11 @@
 import { loadModel } from './answering/inference'
 import { app } from './app'
-import { createConsumerGroup, startConsumer } from './consumer'
+import { Consumer } from './consumer'
 import logger from './lib/log'
 
-void (async () => {
-  await createConsumerGroup()
-  void startConsumer()
-})()
+const consumer = new Consumer()
+
+void consumer.startConsumer()
 
 void loadModel().then(() =>
   app.listen(app.get('port'), () => {

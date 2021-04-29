@@ -3,129 +3,132 @@ import Redis from 'ioredis'
 import { redisConfig } from './config'
 import { runSafely } from './runSafely'
 
-const redis = new Redis()
-let consumerGruopPromiseResolver: ((value?: unknown) => void) | null
-let consumerStoppedPromiseResolver: ((value?: unknown) => void) | null
-let consumerGruopPromise: Promise<unknown> | null
-let stopPromise: Promise<unknown> | null
-let consumingStarted = false
+export class Consumer {
+  private redis = new Redis()
+  private destroyResolver: ((value?: unknown) => void) | null
+  private consumerStoppedPromiseResolver: ((value?: unknown) => void) | null
+  private stopPromise: Promise<unknown> | null
+  private consumingStarted = false
+  private beingCreated = false
 
-const createConsumerGroupInternal = async () => {
-  const streamExists = (await redis.xlen(redisConfig.streamName)) !== 0
+  private manageTimeouts = (callBack: () => Promise<unknown>, timeOutDuration: number, resolver: ((value?: unknown) => void) | null) => {
+    if (resolver) {
+      resolver()
+    } else {
+      setTimeout(callBack, timeOutDuration)
+    }
 
-  if (streamExists) {
-    await runSafely(async () => {
-      await redis.xgroup('DESTROY', redisConfig.streamName, redisConfig.consumerGroupName)
-      await redis.xgroup('CREATE', redisConfig.streamName, redisConfig.consumerGroupName, '0-0')
-      void (consumerGruopPromiseResolver as (value?: unknown) => void)()
-    })
-  } else {
-    setTimeout(createConsumerGroupInternal, 10)
-  }
-}
-
-export const createConsumerGroup = async () => {
-  const awaitConsumerGruopPromise = async () => {
-    await new Promise((resolve) => {
-      consumerGruopPromiseResolver = resolve
-    })
-
-    consumerGruopPromiseResolver = null
-  }
-
-  if (!consumerGruopPromise) {
-    void createConsumerGroupInternal()
-  }
-
-  consumerGruopPromise = consumerGruopPromise || awaitConsumerGruopPromise()
-
-  return consumerGruopPromise
-}
-
-export const destroyConsumerGroup = async () => {
-  await stopConsumer()
-  consumerGruopPromiseResolver = null
-  consumerGruopPromise = null
-
-  return redis.xgroup('DESTROY', redisConfig.streamName, redisConfig.consumerGroupName)
-}
-
-export const startConsumer = async () => {
-  if (!consumerGruopPromise) {
-    throw new Error('no consumer group was created')
-  }
-
-  let counter = 0
-
-  consumingStarted = true
-
-  const start = async () => {
-    await runSafely(async () => {
-      const result = await redis.xreadgroup(
-        'GROUP',
-        redisConfig.consumerGroupName,
-        redisConfig.consumerName,
-        'BLOCK',
-        '0',
-        'COUNT',
-        '1',
-        'STREAMS',
-        redisConfig.streamName,
-        '>'
-      )
-  
-      if (result[0]![1].length === 0) {
-        return manageConsumerTimeouts(start, 10)
-      }
-
-      const lastID = result[0]![1]![0]![0]
-
-      const content = result[0]![1]![0]![1]![3]!
-
-      console.log(lastID)
-      console.log(content)
-
-      if(counter == 5) {
-        await stopConsumer()
-      }
-
-      console.log(counter++)
-
-      await redis.xack(redisConfig.streamName, redisConfig.consumerGroupName, lastID as string)
-
-      return manageConsumerTimeouts(start, 0)
-
-    })
-  }
-
-  return start()
-}
-
-const manageConsumerTimeouts = (callBack: () => Promise<unknown>, timeOutDuration: number) => {
-  if (consumerStoppedPromiseResolver) {
-    consumerStoppedPromiseResolver()
-  } else {
-    setTimeout(callBack, timeOutDuration)
-  }
-
-  return Promise.resolve()
-}
-
-export const stopConsumer = () => {
-  if (!consumingStarted) {
-    return
+    return Promise.resolve()
   }
   
-  const stopConsumerInternal = async () => {
-    await new Promise((resolve) => {
-      consumerStoppedPromiseResolver = resolve
-    })
-
-    consumingStarted = false
-    consumerStoppedPromiseResolver = null
+  private streamExists = async () => {
+    return (await this.redis.xlen(redisConfig.streamName)) !== 0
   }
 
-  stopPromise = stopPromise || stopConsumerInternal()
+  constructor() {
+    this.consumerStoppedPromiseResolver = null
+    this.destroyResolver = null
+    this.stopPromise = null
+  }
 
-  return stopPromise
+  destroyConsumerGroup = async () => {
+    await this.stopConsumer()
+    
+    if (this.beingCreated) {
+      await new Promise((resolve) => {
+        (this.destroyResolver as (value?: unknown) => void) = resolve
+      })
+
+      this.destroyResolver = null
+    }
+
+    if (await this.streamExists()) {
+        return await this.redis.xgroup('DESTROY', redisConfig.streamName, redisConfig.consumerGroupName)
+    }
+
+    return 0
+  }
+
+  startConsumer = async () => {
+    if (this.consumingStarted) {
+      return
+    }
+
+    if (await this.streamExists()) {
+        await this.redis.xgroup('DESTROY', redisConfig.streamName, redisConfig.consumerGroupName)
+        await this.redis.xgroup('CREATE', redisConfig.streamName, redisConfig.consumerGroupName, '0-0')
+        // makes sure group was not destroyed meanwhile being created
+        if (this.destroyResolver) {
+          return this.manageTimeouts(this.startConsumer, 10, this.destroyResolver)
+        }
+    } else {
+      return this.manageTimeouts(this.startConsumer, 10, this.destroyResolver)
+    }
+
+    let counter = 0
+
+    this.consumingStarted = true
+    const start = async () => {
+      await runSafely(async () => {
+        const result = await this.redis.xreadgroup(
+          'GROUP',
+          redisConfig.consumerGroupName,
+          redisConfig.consumerName,
+          'BLOCK',
+          '1000',
+          'COUNT',
+          '1',
+          'STREAMS',
+          redisConfig.streamName,
+          '>'
+        )
+
+        if (!result) {
+          return this.manageTimeouts(start, 10, this.consumerStoppedPromiseResolver)
+        }
+
+        if (result[0]![1].length === 0) {
+          return this.manageTimeouts(start, 10, this.consumerStoppedPromiseResolver)
+        }
+
+        const lastID = result[0]![1]![0]![0]
+
+        const content = result[0]![1]![0]![1]![3]!
+
+        console.log(lastID)
+        console.log(content)
+
+        if (counter == 5) {
+          await this.stopConsumer()
+        }
+
+        console.log(counter++)
+
+        await this.redis.xack(redisConfig.streamName, redisConfig.consumerGroupName, lastID as string)
+
+        return this.manageTimeouts(start, 0, this.consumerStoppedPromiseResolver)
+      })
+    }
+    
+    return start()
+  }
+
+  stopConsumer = () => {
+    if (!this.consumingStarted) {
+      return
+    }
+
+    const stopConsumerInternal = async () => {
+      await new Promise((resolve) => {
+        this.consumerStoppedPromiseResolver = resolve
+      })
+
+      this.consumingStarted = false
+      this.consumerStoppedPromiseResolver = null
+    }
+
+    this.stopPromise = this.stopPromise || stopConsumerInternal()
+
+    return this.stopPromise
+  }
 }
