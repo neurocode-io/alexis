@@ -1,7 +1,7 @@
 import Redis from 'ioredis'
 
 import { redisConfig } from './config'
-import log from './lib/log'
+import { runSafely } from './runSafely'
 
 const redis = new Redis()
 let consumerGruopPromiseResolver: ((value?: unknown) => void) | null
@@ -14,15 +14,11 @@ const createConsumerGroupInternal = async () => {
   const streamExists = (await redis.xlen(redisConfig.streamName)) !== 0
 
   if (streamExists) {
-    try {
+    await runSafely(async () => {
       await redis.xgroup('DESTROY', redisConfig.streamName, redisConfig.consumerGroupName)
       await redis.xgroup('CREATE', redisConfig.streamName, redisConfig.consumerGroupName, '0-0')
       void (consumerGruopPromiseResolver as (value?: unknown) => void)()
-    } catch {
-      setTimeout(createConsumerGroupInternal, 10)
-
-      return
-    }
+    })
   } else {
     setTimeout(createConsumerGroupInternal, 10)
   }
@@ -64,7 +60,7 @@ export const startConsumer = async () => {
   consumingStarted = true
 
   const start = async () => {
-    try {
+    await runSafely(async () => {
       const result = await redis.xreadgroup(
         'GROUP',
         redisConfig.consumerGroupName,
@@ -99,11 +95,7 @@ export const startConsumer = async () => {
 
       return manageConsumerTimeouts(start, 0)
 
-    } catch (err) {
-      log.error(err)
-
-      return Promise.reject(err)
-    }
+    })
   }
 
   return start()

@@ -2,7 +2,7 @@ import Redis from 'ioredis'
 
 import { redisConfig } from './config'
 import { createConsumerGroup, destroyConsumerGroup, startConsumer, stopConsumer } from './consumer'
-
+import { runSafely } from './runSafely'
 
 describe('consumer', () => {
   const redis = new Redis()
@@ -11,9 +11,8 @@ describe('consumer', () => {
     console.log('hi')
   })
 
-  afterAll(async() => {
-    await stopConsumer()
-    await destroyConsumerGroup()
+  afterAll(async () => {
+    await redis.flushdb()
     redis.disconnect()
   })
 
@@ -23,20 +22,16 @@ describe('consumer', () => {
     })
 
     it('should not throw when there is no group', async () => {
-      try {
+      await runSafely(async () => {
         await expect(destroyConsumerGroup()).resolves.toEqual(0)
-      } catch (err) {
-        throw new Error(err)
-      }
+      })
     })
 
     it('should disable group', async () => {
-      try {
+      await runSafely(async () => {
         await redis.xgroup('CREATE', redisConfig.streamName, redisConfig.consumerGroupName, '0-0')
-        await expect( destroyConsumerGroup()).resolves.toEqual(1)
-      } catch (err) {
-        throw new Error(err)
-      }
+        await expect(destroyConsumerGroup()).resolves.toEqual(1)
+      })
     })
   })
 
@@ -50,48 +45,34 @@ describe('consumer', () => {
     })
 
     it('should create correctly', async () => {
-      try {
+      await runSafely(async () => {
         await createConsumerGroup()
         await expect(redis.xgroup('DESTROY', redisConfig.streamName, redisConfig.consumerGroupName)).resolves.toEqual(1)
-      } catch (err) {
-        throw new Error(err)
-      }
+      })
     })
 
     it('should create one group when multiple createConsumerGroup are called', async () => {
-      try {
+      await runSafely(async () => {
         await createConsumerGroup()
         await createConsumerGroup()
         expect(await destroyConsumerGroup()).toEqual(1)
-      } catch (err) {
-        throw new Error(err)
-      }
+      })
     })
   })
 
   describe('startConsumer', () => {
     beforeEach(async () => {
-      try {
-        await destroyConsumerGroup()
-      } catch (err) {
-        throw new Error(err)
-      }
-    })
-
-    afterEach(async () => {
-      try {
+      await runSafely(async () => {
         await stopConsumer()
-      } catch (err) {
-        throw new Error(err)
-      }
+        await destroyConsumerGroup()
+      })
     })
 
     afterAll(async () => {
-      try {
+      await runSafely(async () => {
+        await stopConsumer()
         await destroyConsumerGroup()
-      } catch (err) {
-        throw new Error(err)
-      }
+      })
     })
 
     it('should throw when no group was created', async () => {
@@ -104,7 +85,7 @@ describe('consumer', () => {
     })
 
     it('should create cnosumers', async () => {
-      try {
+      await runSafely(async () => {
         await createConsumerGroup()
         await startConsumer()
         const info = await redis.xinfo('CONSUMERS', redisConfig.streamName, redisConfig.consumerGroupName)
@@ -112,9 +93,7 @@ describe('consumer', () => {
         expect(info[0]![1]).toEqual('alexisConsumer')
         await stopConsumer()
         await destroyConsumerGroup()
-      } catch (err) {
-        throw new Error(err)
-      }
+      })
     })
   })
 })
