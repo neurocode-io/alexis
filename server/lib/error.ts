@@ -31,7 +31,7 @@ class APIerror extends Error {
   }
 
   public serialize() {
-    return JSON.stringify({ error: { name: this.name, msg: this.message, code: this.code, retryable: this.retryable } })
+    return { error: { name: this.name, msg: this.message, code: this.code, retryable: this.retryable } }
   }
 
   public getCode() {

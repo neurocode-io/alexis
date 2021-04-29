@@ -3,8 +3,8 @@
 import * as fileType from 'file-type'
 import * as PDFJS from 'pdfjs-dist/es5/build/pdf'
 
-const isPDFfle = async (buf: Buffer) => {
-  const fileExt = await fileType.fromBuffer(buf)
+const isPDFfle = async (data: Buffer) => {
+  const fileExt = await fileType.fromBuffer(data)
 
   if (!fileExt?.mime.toLocaleLowerCase().includes('pdf')) {
     return false

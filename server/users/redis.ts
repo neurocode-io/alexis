@@ -18,7 +18,7 @@ const createIdx = async (pdfId: string) => {
       'HASH',
       'PREFIX',
       '1',
-      key(pdfId),
+      key(`pdfs:${pdfId}`),
       'SCHEMA',
       'content',
       'TEXT',
@@ -26,6 +26,7 @@ const createIdx = async (pdfId: string) => {
       'dm:en'
     )
     .catch(handleError)
+  // ax:f1d7c6695aeb087e48a6182130acf707
   // TODO add FT.INFO and check percent_indexed : progress of background indexing (1 if complete)
 }
 
