@@ -5,7 +5,7 @@ import { getText } from './pdf'
 describe('pdf', () => {
   describe('getText', () => {
     it('should extract text from PDF', () => {
-      fs.readFile(`${__dirname}./test-files/EffectiveAggregateDesign.pdf`, async (err, data) => {
+      fs.readFile(`./test-files/EffectiveAggregateDesign.pdf`, async (err, data) => {
         expect(err).toBeNull()
         for await (const obj of getText(data)) {
           expect(obj).toHaveProperty('page')
@@ -19,7 +19,7 @@ describe('pdf', () => {
 
       getText(pdfContent)
         .next()
-        .catch((e) => expect(e).toMatch('Not a PDF file'))
+        .catch((e: Error) => expect(e.message).toEqual('Not a PDF file'))
     })
   })
 })

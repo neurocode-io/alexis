@@ -5,7 +5,10 @@ import log from './lib/log'
 
 const redis = new Redis()
 let consumerGruopPromiseResolver: ((value?: unknown) => void) | null
+let consumerStoppedPromiseResolver: ((value?: unknown) => void) | null
 let consumerGruopPromise: Promise<unknown> | null
+let stopPromise: Promise<unknown> | null
+let consumingStarted = false
 
 const createConsumerGroupInternal = async () => {
   const streamExists = (await redis.xlen(redisConfig.streamName)) !== 0
@@ -30,6 +33,8 @@ export const createConsumerGroup = async () => {
     await new Promise((resolve) => {
       consumerGruopPromiseResolver = resolve
     })
+
+    consumerGruopPromiseResolver = null
   }
 
   if (!consumerGruopPromise) {
@@ -42,26 +47,28 @@ export const createConsumerGroup = async () => {
 }
 
 export const destroyConsumerGroup = async () => {
-  if (consumerGruopPromiseResolver) {
-    consumerGruopPromiseResolver()
-  }
-
+  await stopConsumer()
   consumerGruopPromiseResolver = null
   consumerGruopPromise = null
 
   return redis.xgroup('DESTROY', redisConfig.streamName, redisConfig.consumerGroupName)
 }
 
-export const startConsumer = async (consumerName: string) => {
-  let checkBacklog: boolean
+export const startConsumer = async () => {
+  if (!consumerGruopPromise) {
+    throw new Error('no consumer group was created')
+  }
+
   let counter = 0
+
+  consumingStarted = true
 
   const start = async () => {
     try {
       const result = await redis.xreadgroup(
         'GROUP',
         redisConfig.consumerGroupName,
-        consumerName,
+        redisConfig.consumerName,
         'BLOCK',
         '0',
         'COUNT',
@@ -70,13 +77,9 @@ export const startConsumer = async (consumerName: string) => {
         redisConfig.streamName,
         '>'
       )
-
-      console.log(result)
-      checkBacklog = result[0]![1].length !== 0
-      if (!checkBacklog) {
-        setTimeout(start, 10)
-
-        return
+  
+      if (result[0]![1].length === 0) {
+        return manageConsumerTimeouts(start, 10)
       }
 
       const lastID = result[0]![1]![0]![0]
@@ -85,12 +88,17 @@ export const startConsumer = async (consumerName: string) => {
 
       console.log(lastID)
       console.log(content)
+
+      if(counter == 5) {
+        await stopConsumer()
+      }
+
       console.log(counter++)
 
       await redis.xack(redisConfig.streamName, redisConfig.consumerGroupName, lastID as string)
-      setTimeout(start, 0)
 
-      return Promise.resolve()
+      return manageConsumerTimeouts(start, 0)
+
     } catch (err) {
       log.error(err)
 
@@ -98,5 +106,34 @@ export const startConsumer = async (consumerName: string) => {
     }
   }
 
-  await start()
+  return start()
+}
+
+const manageConsumerTimeouts = (callBack: () => Promise<unknown>, timeOutDuration: number) => {
+  if (consumerStoppedPromiseResolver) {
+    consumerStoppedPromiseResolver()
+  } else {
+    setTimeout(callBack, timeOutDuration)
+  }
+
+  return Promise.resolve()
+}
+
+export const stopConsumer = () => {
+  if (!consumingStarted) {
+    return
+  }
+  
+  const stopConsumerInternal = async () => {
+    await new Promise((resolve) => {
+      consumerStoppedPromiseResolver = resolve
+    })
+
+    consumingStarted = false
+    consumerStoppedPromiseResolver = null
+  }
+
+  stopPromise = stopPromise || stopConsumerInternal()
+
+  return stopPromise
 }

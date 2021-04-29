@@ -24,6 +24,10 @@ const redisConfig = {
   consumerGroupName: env
     .get('REDIS_CONSUMER_GROUP_NAME')
     .required()
+    .asString(),
+  consumerName: env
+    .get('REDIS_CONSUMER_NAME')
+    .required()
     .asString()
 }
 

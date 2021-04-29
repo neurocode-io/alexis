@@ -22,7 +22,7 @@ const app = express()
 app.use(express.json())
 const redis = new Redis()
 
-void loadPdfFromUrl(`${__dirname}/../test-files/book.pdf`)
+void loadPdfFromUrl(`${__dirname}/../test-files/EffectiveAggregateDesign.pdf`)
 app.get('/', (_req: Request, res: Response) => {
   res.sendFile(`${__dirname}/index.html`)
 })

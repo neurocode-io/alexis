@@ -5,7 +5,7 @@ import logger from './lib/log'
 
 void (async () => {
   await createConsumerGroup()
-  void startConsumer('pdfTest')
+  void startConsumer()
 })()
 
 void loadModel().then(() =>
