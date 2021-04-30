@@ -7,44 +7,62 @@ import { runSafely } from './runSafely'
 describe('consumer', () => {
   const redis = new Redis()
   
+  beforeAll(async () => {
+    await redis.flushall()
+  })
+
   afterAll(async () => {
     await redis.flushall()
   })
 
-  describe('faulty behaviour', () => {
-    it('should destry group while gruop being created', async () => {
-      const consumer = new Consumer()
+  // describe('faulty behaviour', () => {
+  //   const consumer = new Consumer()
 
-      await runSafely(async () => {
-        await consumer.startConsumer()
-        await expect(consumer.destroyConsumerGroup()).resolves.toEqual(0)
-      })
-    })
-  })
+  //   it('stopConsumer should not throw even if there is no stream and no group', async () => {
+  //     const consumer = new Consumer()
 
-  describe('destroyConsumerGroup', () => {
-    beforeAll(async() => {
-      await redis.flushall()
-      await redis.xadd(redisConfig.streamName, '*', 'pageNumber', '0', 'content', '')
-    })
+  //     await runSafely(async () => {
+  //       await consumer.stopConsumer()
+  //     })
+  //   })
 
-    it('should not throw when there is no group', async () => {
-      await runSafely(async () => {
-        const consumer = new Consumer()
+  //   it('destry should not throw even if there is no stream and no group', async () => {
+  //     await runSafely(async () => {
+  //       await expect(consumer.destroyConsumerGroup()).resolves.toEqual(0)
+  //     })
+  //   })
 
-        await expect(consumer.destroyConsumerGroup()).resolves.toEqual(0)
-      })
-    })
+  //   it('should destry group while gruop being created', async () => {
+  //     await runSafely(async () => {
+  //       await consumer.startConsumer()
+  //       await expect(consumer.destroyConsumerGroup()).resolves.toEqual(0)
+  //     })
+  //   })
+  // })
 
-    it('should destroy group', async () => {
-      await runSafely(async () => {
-        const consumer = new Consumer()
+  // describe('destroyConsumerGroup', () => {
+  //   beforeAll(async() => {
+  //     await redis.flushall()
+  //     await redis.xadd(redisConfig.streamName, '*', 'pageNumber', '0', 'content', '')
+  //   })
 
-        await consumer.startConsumer()
-        await expect(consumer.destroyConsumerGroup()).resolves.toEqual(1)
-      })
-    })
-  })
+  //   it('should not throw when there is no group', async () => {
+  //     await runSafely(async () => {
+  //       const consumer = new Consumer()
+
+  //       await expect(consumer.destroyConsumerGroup()).resolves.toEqual(0)
+  //     })
+  //   })
+
+  //   it('should destroy group', async () => {
+  //     await runSafely(async () => {
+  //       const consumer = new Consumer()
+
+  //       await consumer.startConsumer()
+  //       await expect(consumer.destroyConsumerGroup()).resolves.toEqual(1)
+  //     })
+  //   })
+  // })
 
   describe('startConsumer', () => {
     beforeAll(async() => {
