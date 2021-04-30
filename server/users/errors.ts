@@ -5,6 +5,12 @@ export const errors = {
     msg: 'Invalid input',
     retryable: false
   },
+  emailConflictError: {
+    name: 'EmailConflictError',
+    code: 409,
+    msg: 'Email already exists',
+    retryable: false
+  },
   pdfIndexing: {
     name: 'PDFError',
     code: 500,

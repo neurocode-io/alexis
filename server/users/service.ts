@@ -1,4 +1,7 @@
+import bcrypt from 'bcrypt'
+
 import { createError } from '../lib/error'
+import log from '../lib/log'
 import r, { idx, key } from '../lib/redis'
 import { errors } from './errors'
 import { CreateUserInput } from './types'
@@ -26,7 +29,6 @@ const createIdx = async (pdfId: string) => {
       'dm:en'
     )
     .catch(handleError)
-  // ax:f1d7c6695aeb087e48a6182130acf707
   // TODO add FT.INFO and check percent_indexed : progress of background indexing (1 if complete)
 }
 
@@ -35,11 +37,35 @@ const attachPdf = async (userId: string, pdfId: string) => {
 }
 
 const createUser = async (userId: string, user: CreateUserInput) => {
-  await r.send_command('JSON.SET', key(userId), '.', JSON.stringify(user))
+  log.info(`${userId}`)
+  if (await r.sismember(key('emails'), user.email)) createError(errors.emailConflictError)
+
+  log.info('multi')
+  await r
+    .multi([
+      ['call', 'JSON.SET', key(userId), '.', JSON.stringify(user)],
+      ['sadd', key('emails'), user.email],
+      ['hmset', idx('email'), user.email, userId]
+    ])
+    .exec()
+
+  log.info('multi end')
+}
+
+const checkUser = async (email: string, password: string): Promise<never | void> => {
+  const userId = await r.hget(idx('email'), email)
+
+  if (!userId) return createError(errors.validationError)
+
+  const userPassword = await r.send_command('JSON.GET', key(userId), '.password')
+
+  if (await bcrypt.compare(password, userPassword)) return
+
+  createError(errors.validationError)
 }
 
 const lookUp = async (idx: string, searchTerm: string) => {
   await r.send_command('FT.SEARCH', idx, `@content:${searchTerm}`, 'SCORER', 'BM25', 'WITHSCORES', 'LIMIT', '0', '5')
 }
 
-export { attachPdf, createIdx, createUser, lookUp }
+export { attachPdf, checkUser, createIdx, createUser, lookUp }

@@ -5,7 +5,7 @@ import { errorHandler, uploadHandler } from './lib/express'
 import logger from './lib/log'
 import { storePdf } from './pdf-processing/store'
 import userRouter from './users/handler'
-import { createIdx } from './users/redis'
+import { createIdx } from './users/service'
 
 const app = express()
 
