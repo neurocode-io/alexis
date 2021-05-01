@@ -8,8 +8,10 @@ const redisConfig = {
 }
 
 const serverConfig = {
-  port: env.get('SERVER_PORT').default(3000).asIntPositive(),
+  port: env.get('SERVER_PORT').default(3000).asPortNumber(),
   logLevel: env.get('SERVER_LOG_LEVEL').required().asString().toLowerCase(),
+  appName: 'alexis',
+  sessionSecret: env.get('SERVER_SESSION_SECRET').required().asString(),
   maxPDFSize: env.get('SERVER_MAX_PDF_SIZE').asIntPositive(),
   uploadDestionation: env.get('SERVER_UPLOAD_DIR').asString()
 }

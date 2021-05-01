@@ -1,7 +1,8 @@
 import express, { Request, Response } from 'express'
+import Redis from 'ioredis'
 
-import { serverConfig } from './config'
-import { errorHandler, uploadHandler } from './lib/express'
+import { redisConfig, serverConfig } from './config'
+import { errorHandler, sessionStore, uploadHandler } from './lib/express'
 import logger from './lib/log'
 import { storePdf } from './pdf-processing/store'
 import userRouter from './users/handler'
@@ -11,7 +12,13 @@ const app = express()
 
 app.disable('x-powered-by')
 app.set('port', serverConfig.port)
-
+app.use(
+  sessionStore({
+    redisClient: new Redis(redisConfig),
+    appName: serverConfig.appName,
+    sessionSecret: serverConfig.sessionSecret
+  })
+)
 app.use('/v1', userRouter)
 
 app.get('/', (_req: Request, res: Response) => {

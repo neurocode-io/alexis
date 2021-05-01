@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
+import * as uuid from 'uuid'
 
 import { createError } from '../lib/error'
-import log from '../lib/log'
 import r, { idx, key } from '../lib/redis'
 import { errors } from './errors'
 import { CreateUserInput } from './types'
@@ -36,11 +36,15 @@ const attachPdf = async (userId: string, pdfId: string) => {
   await r.send_command('JSON.ARRAPPEND', key(userId), '.pdfs', JSON.stringify({ id: pdfId }))
 }
 
-const createUser = async (userId: string, user: CreateUserInput) => {
-  log.info(`${userId}`)
+const createUser = async (user: CreateUserInput) => {
   if (await r.sismember(key('emails'), user.email)) createError(errors.emailConflictError)
 
-  log.info('multi')
+  const password = user.password
+  const saltRounds = 8
+  const userId = uuid.v4()
+
+  user.password = await bcrypt.hash(password, saltRounds)
+
   await r
     .multi([
       ['call', 'JSON.SET', key(userId), '.', JSON.stringify(user)],
@@ -48,8 +52,6 @@ const createUser = async (userId: string, user: CreateUserInput) => {
       ['hmset', idx('email'), user.email, userId]
     ])
     .exec()
-
-  log.info('multi end')
 }
 
 const checkUser = async (email: string, password: string): Promise<never | void> => {

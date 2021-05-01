@@ -1,4 +1,6 @@
+import connect from 'connect-redis'
 import { NextFunction, Request, Response } from 'express'
+import session from 'express-session'
 import multer from 'multer'
 import { BaseLogger } from 'pino'
 
@@ -40,4 +42,25 @@ const safeRouteHandler = (func: (req: Request, res: Response) => Promise<void>) 
     Promise.resolve(func(req, res)).catch(next)
   }
 
-export { errorHandler, safeRouteHandler, uploadHandler }
+type SessionInput = {
+  appName: string
+  sessionSecret: string
+  redisClient: connect.Client
+}
+
+const sessionStore = (opts: SessionInput) => {
+  const RedisStore = connect(session)
+
+  return session({
+    secret: opts.sessionSecret,
+    store: new RedisStore({
+      client: opts.redisClient,
+      prefix: 'session'
+    }),
+    name: opts.appName,
+    resave: false,
+    saveUninitialized: false
+  })
+}
+
+export { errorHandler, safeRouteHandler, sessionStore, uploadHandler }
