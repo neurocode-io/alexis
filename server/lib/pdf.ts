@@ -3,8 +3,8 @@
 import * as fileType from 'file-type'
 import * as PDFJS from 'pdfjs-dist/es5/build/pdf'
 
-const isPDFfle = async (buf: Buffer) => {
-  const fileExt = await fileType.fromBuffer(buf)
+const isPDFfle = async (data: Buffer) => {
+  const fileExt = await fileType.fromBuffer(data)
 
   if (!fileExt?.mime.toLocaleLowerCase().includes('pdf')) {
     return false
@@ -23,8 +23,9 @@ async function* getText(data: Buffer) {
   for (let i = 1; i <= maxPages; i++) {
     const page = await pdf.getPage(i)
     const text = await page.getTextContent()
+    const content = text.items.map((item: { str: string }) => item.str).join(' ')
 
-    yield { page: i, content: text.items.map((item: { str: string }) => item.str).join(' ') }
+    yield { id: pdf.fingerprint, page: i, content }
   }
 }
 
