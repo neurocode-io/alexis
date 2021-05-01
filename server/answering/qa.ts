@@ -36,12 +36,14 @@ const getAnswer = async (question: string, context: string) => {
 
   log.info(answers)
 
-  const top1 = answers.sort((a, b) => {
-    if (!a.answer) return 1
-    if (!b.answer) return -1
+  const top1 = answers
+    .sort((a, b) => {
+      if (!a.answer) return 1
+      if (!b.answer) return -1
 
-    return b.score - a.score
-  })[0]
+      return b.score - a.score
+    })
+    .shift()
 
   return {
     answer: clean(top1?.answer ?? ''),

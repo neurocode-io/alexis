@@ -14,6 +14,8 @@ void loadModel().then(() =>
 )
 
 process.on('unhandledRejection', (reason, _) => {
+  logger.error('unhandledRejection occured')
+
   const msg = reason ?? 'Unexpected promise rejection occured'
 
   logger.error(msg)
