@@ -4,14 +4,16 @@ import { getText } from './pdf'
 
 describe('pdf', () => {
   describe('getText', () => {
-    it('should extract text from PDF', async () => {
-      const pdfContent = fs.readFileSync('./test-files/EffectiveAggregateDesign.pdf')
-
-      for await (const obj of getText(pdfContent)) {
-        expect(obj).toHaveProperty('page')
-        expect(obj).toHaveProperty('content')
-      }
+    it('should extract text from PDF', () => {
+      fs.readFile(`./test-files/EffectiveAggregateDesign.pdf`, async (err, data) => {
+        expect(err).toBeNull()
+        for await (const obj of getText(data)) {
+          expect(obj).toHaveProperty('page')
+          expect(obj).toHaveProperty('content')
+        }
+      })
     })
+
     it('should not extract from invalid PDF', () => {
       const pdfContent = Buffer.from('hello world')
 

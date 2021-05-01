@@ -1,6 +1,11 @@
 import { loadModel } from './answering/inference'
 import { app } from './app'
+import { Consumer } from './consumer'
 import logger from './lib/log'
+
+const consumer = new Consumer()
+
+void consumer.startConsumer()
 
 void loadModel().then(() =>
   app.listen(app.get('port'), () => {
