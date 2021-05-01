@@ -16,7 +16,8 @@ app.use(
   sessionStore({
     redisClient: new Redis(redisConfig),
     appName: serverConfig.appName,
-    sessionSecret: serverConfig.sessionSecret
+    sessionSecret: serverConfig.sessionSecret,
+    secure: process.env.NODE_ENV === 'production'
   })
 )
 app.use('/v1', userRouter)

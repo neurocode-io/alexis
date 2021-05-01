@@ -13,6 +13,13 @@ const loginSchema = z.object({
   password: z.string().min(5)
 })
 
+declare module 'express-session' {
+  interface Session {
+    email: string
+    destroy(callback?: (err: Error) => void): this
+  }
+}
+
 type CreateUserInput = z.infer<typeof userSchema>
 
 export { CreateUserInput, loginSchema, userSchema }

@@ -46,6 +46,7 @@ type SessionInput = {
   appName: string
   sessionSecret: string
   redisClient: connect.Client
+  secure: boolean
 }
 
 const sessionStore = (opts: SessionInput) => {
@@ -59,8 +60,25 @@ const sessionStore = (opts: SessionInput) => {
     }),
     name: opts.appName,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+      secure: opts.secure
+    }
   })
 }
 
-export { errorHandler, safeRouteHandler, sessionStore, uploadHandler }
+const auth = (req: Request, res: Response, next: NextFunction) => {
+  const { email } = req.session
+
+  if (!email) {
+    return res.status(401).json({
+      error: {
+        name: 'AuthenticationError'
+      }
+    })
+  }
+
+  return next()
+}
+
+export { auth, errorHandler, safeRouteHandler, sessionStore, uploadHandler }
