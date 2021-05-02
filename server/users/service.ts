@@ -54,16 +54,16 @@ const createUser = async (user: CreateUserInput) => {
     .exec()
 }
 
-const checkUser = async (email: string, password: string): Promise<never | void> => {
+const checkUser = async (email: string, password: string): Promise<string | never> => {
   const userId = await r.hget(idx('email'), email)
 
   if (!userId) return createError(errors.validationError)
 
   const userPassword = await r.send_command('JSON.GET', key(userId), '.password')
 
-  if (await bcrypt.compare(password, userPassword)) return
+  if (!(await bcrypt.compare(password, userPassword))) createError(errors.validationError)
 
-  createError(errors.validationError)
+  return userId
 }
 
 const lookUp = async (idx: string, searchTerm: string) => {

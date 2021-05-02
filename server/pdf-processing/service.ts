@@ -1,12 +1,10 @@
 import { serverConfig } from '../config'
 import r, { stream } from '../lib/redis'
 
-const startProcessing = async (fileName: string) => {
+const startProcessing = async (fileName: string, userId: string) => {
   const streamName = serverConfig.pdfStream
 
-  await r.xadd(stream(streamName), '*', 'fileName', fileName)
-  // const pdfId = await storePdf(req.file.filename)
-  // await createIdx(pdfId)
+  await r.xadd(stream(streamName), '*', 'fileName', fileName, 'user', userId)
 }
 
 export { startProcessing }

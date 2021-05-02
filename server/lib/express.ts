@@ -68,9 +68,9 @@ const sessionStore = (opts: SessionInput) => {
 }
 
 const auth = (req: Request, res: Response, next: NextFunction) => {
-  const { email } = req.session
+  const { userId } = req.session
 
-  if (!email) {
+  if (!userId) {
     return res.status(401).json({
       error: {
         name: 'AuthenticationError'
