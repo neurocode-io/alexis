@@ -64,6 +64,7 @@ const start = async () => {
     const obj = Object.fromEntries(resp)
     const entries = obj[stream(streamName)]
 
+    //pendingList was empty lets go back and check for new events
     if (entries?.length === 0) {
       backLog = false
       continue
@@ -83,7 +84,7 @@ const start = async () => {
     const ack = await r.xack(stream(streamName), groupName, id)
 
     //TODO what to do? reprocess? or throw?
-    if (ack === 1) log.warn(`Error acknowledging event ${id}`)
+    if (ack !== 1) log.warn(`Error acknowledging event ${id}`)
   }
 }
 
