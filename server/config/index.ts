@@ -30,12 +30,16 @@ const serverConfig = {
     .asString()
     .toLowerCase(),
   appName: 'alexis',
+  pdfStream: 'pdf-processing',
   sessionSecret: env
     .get('SERVER_SESSION_SECRET')
     .required()
     .asString(),
   maxPDFSize: env.get('SERVER_MAX_PDF_SIZE').asIntPositive(),
-  uploadDestionation: env.get('SERVER_UPLOAD_DIR').asString()
+  uploadDestionation: env
+    .get('SERVER_UPLOAD_DIR')
+    .default('uploads/')
+    .asString()
 }
 
 export { redisConfig, serverConfig }

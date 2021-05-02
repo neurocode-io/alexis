@@ -2,11 +2,10 @@ import express, { Request, Response } from 'express'
 import Redis from 'ioredis'
 
 import { redisConfig, serverConfig } from './config'
-import { errorHandler, sessionStore, uploadHandler } from './lib/express'
+import { errorHandler, sessionStore } from './lib/express'
 import logger from './lib/log'
-import { storePdf } from './pdf-processing/store'
+import pdfRouter from './pdf-processing/handler'
 import userRouter from './users/handler'
-import { createIdx } from './users/service'
 
 const app = express()
 
@@ -20,23 +19,12 @@ app.use(
     secure: process.env.NODE_ENV === 'production'
   })
 )
-app.use('/v1', userRouter)
-
 app.get('/', (_req: Request, res: Response) => {
   res.sendFile(`${__dirname}/index.html`)
 })
 
-app.post(
-  '/',
-  uploadHandler(serverConfig.maxPDFSize, serverConfig.uploadDestionation).single('file-to-upload'),
-  async (req: Request, res: Response) => {
-    const pdfId = await storePdf(req.file.filename)
-
-    await createIdx(pdfId)
-
-    res.redirect('/')
-  }
-)
+app.use('/v1', userRouter)
+app.use('/knowledge-source', pdfRouter)
 
 app.use(errorHandler(logger))
 

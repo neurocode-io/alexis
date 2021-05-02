@@ -4,9 +4,9 @@ import session from 'express-session'
 import multer from 'multer'
 import { BaseLogger } from 'pino'
 
-const uploadHandler = (maxSize?: number, destination?: string) => {
+const uploadHandler = (destination: string, maxSize?: number) => {
   const storage = multer.diskStorage({
-    destination: destination ?? 'uploads/',
+    destination,
     filename: (_, file, callback) => callback(null, file.originalname)
   })
 
