@@ -27,11 +27,11 @@ Content-Type: {{contentType}}
 
 ###
 # @name search
-POST {{api}}/v1/search
+POST {{api}}/v1/ask
 Content-Type: {{contentType}}
 
 {
-  "question": "What is JAVA?"
+  "question": "What is etcd?"
 }
 
 ###

@@ -4,19 +4,17 @@ import { redisConfig } from '../config'
 
 const redis = new Redis(redisConfig)
 
-type AiOutput = {
-  [key: string]: string | number
-}
-
-export const arrayToObj = (result: unknown[]) => {
+export function arrayToObj<T>(result: unknown[]): T {
   if (Array.isArray(result)) {
-    const obj = {} as AiOutput
+    const obj = {} as T
 
     for (let i = 0; i < result.length; i += 2) {
-      const key = result[parseInt(`${i}`)]
+      const key = result[parseInt(`${i}`)] as string
 
       if (typeof key === 'string') {
-        obj[key] = result[i + 1] as string | number
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        obj[key] = result[i + 1]
       }
     }
 

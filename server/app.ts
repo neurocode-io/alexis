@@ -14,7 +14,7 @@ app.disable('x-powered-by')
 app.set('port', serverConfig.port)
 app.use(
   sessionStore({
-    redisClient: new Redis(redisConfig),
+    redisClient: new Redis({ ...redisConfig, db: 1 }),
     appName: serverConfig.appName,
     sessionSecret: serverConfig.sessionSecret,
     secure: process.env.NODE_ENV === 'production'

@@ -69,7 +69,7 @@ const sessionStore = (opts: SessionInput) => {
     secret: opts.sessionSecret,
     store: new RedisStore({
       client: opts.redisClient,
-      prefix: 'session'
+      prefix: 'session:'
     }),
     name: opts.appName,
     resave: false,

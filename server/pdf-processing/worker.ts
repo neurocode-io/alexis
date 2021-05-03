@@ -64,7 +64,7 @@ const start = async () => {
     //@ts-ignore
     const payload = Object.fromEntries(entries)
     const id = Object.keys(payload).shift() as string
-    const data = arrayToObj(payload[id]) as { fileName: string; userId: string }
+    const data = arrayToObj<{ fileName: string; userId: string }>(payload[id])
 
     log.info(`Processing ${data.fileName} for user: ${data.userId}`)
 

@@ -1,7 +1,8 @@
-import { Request, Response, Router } from 'express'
+import express, { Request, Response, Router } from 'express'
 import * as z from 'zod'
 
 import { safeRouteHandler } from '../lib/express'
+import { getAnswer } from './qa'
 // import { getAnswer } from './qa'
 import { lookUp } from './search'
 
@@ -12,19 +13,22 @@ const searchSchema = z.object({
 })
 
 const ask = async (req: Request, res: Response) => {
-  console.log(req.body)
   const input = await searchSchema.parseAsync(req.body)
   const userId = req.session.userId
 
-  const content = await lookUp(userId, input.question)
+  const resp = await lookUp(userId, input.question)
 
-  console.log(content)
+  console.log(resp)
 
-  // const answer = await getAnswer(input.question, content)
+  const result = await Promise.all(
+    resp.map(({ content }) => {
+      return getAnswer(input.question, content)
+    })
+  )
 
-  res.status(200).json(content)
+  res.status(200).json(result)
 }
 
-router.post('/ask', safeRouteHandler(ask))
+router.post('/ask', express.json(), safeRouteHandler(ask))
 
 export default router
