@@ -73,7 +73,10 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
   if (!userId) {
     return res.status(401).json({
       error: {
-        name: 'AuthenticationError'
+        name: 'AuthenticationError',
+        code: 401,
+        msg: 'User is unauthenitcated',
+        retryable: false
       }
     })
   }

@@ -1,9 +1,10 @@
 import { serverConfig } from '../config'
 import log from '../lib/log'
-import r, { stream } from '../lib/redis'
+import { newClient, stream } from '../lib/redis'
 // import { createIdx } from '../users/service'
 // import { storePdf } from './store'
 
+const r = newClient()
 const processorNumber = process.argv[2] ?? 0
 let isConsuming = true
 const consumerName = `pdf-processor-${processorNumber}`
