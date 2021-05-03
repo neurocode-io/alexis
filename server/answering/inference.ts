@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 
-import r from '../lib/redis'
+import r, { key } from '../lib/redis'
 
 type AiInfoOutput = {
   [key: string]: string | number
@@ -22,9 +22,14 @@ const runInference = async (
   encodedIds: number[],
   attentionMask: number[]
 ): Promise<{ ansStart: number[]; ansEnd: number[] }> => {
+  const inputKey = key(`enc_input_ids`)
+  const attentionMaskKey = key(`enc_attention_mask`)
+  const outputStartScore = key(`answer_start_score`)
+  const outputEndScore = key(`answer_end_score`)
+
   await Promise.all([
-    r.send_command('AI.TENSORSET', 'enc_input_ids', 'int64', 1, 512, 'VALUES', encodedIds),
-    r.send_command('AI.TENSORSET', 'enc_attention_mask', 'int64', 1, 512, 'VALUES', attentionMask)
+    r.send_command('AI.TENSORSET', inputKey, 'int64', 1, 512, 'VALUES', encodedIds),
+    r.send_command('AI.TENSORSET', attentionMaskKey, 'int64', 1, 512, 'VALUES', attentionMask)
   ])
 
   await r.send_command(
@@ -33,16 +38,16 @@ const runInference = async (
     'TIMEOUT',
     3000,
     'INPUTS',
-    'enc_input_ids',
-    'enc_attention_mask',
+    inputKey,
+    attentionMaskKey,
     'OUTPUTS',
-    'enc_answer_start_scores',
-    'enc_answer_end_scores'
+    outputStartScore,
+    outputEndScore
   )
 
   const [ansStart, ansEnd] = await Promise.all([
-    r.send_command('AI.TENSORGET', 'enc_answer_start_scores', 'VALUES'),
-    r.send_command('AI.TENSORGET', 'enc_answer_end_scores', 'VALUES')
+    r.send_command('AI.TENSORGET', outputStartScore, 'VALUES'),
+    r.send_command('AI.TENSORGET', outputEndScore, 'VALUES')
   ])
 
   return {

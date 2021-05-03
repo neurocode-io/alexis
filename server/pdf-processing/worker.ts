@@ -6,7 +6,7 @@ import { newClient, stream } from '../lib/redis'
 
 const r = newClient()
 const processorNumber = process.argv[2] ?? 0
-let isConsuming = true
+const isConsuming = true
 const consumerName = `pdf-processor-${processorNumber}`
 const groupName = 'pdf-processor'
 const streamName = serverConfig.pdfStream
@@ -16,16 +16,6 @@ const lastId = '0-0'
 let backLog = true
 
 log.info(`Consumer ${consumerName} starting...`)
-
-const shutDown = () => {
-  isConsuming = false
-  log.info(`Shutting down Consumer ${consumerName}`)
-
-  return setTimeout(() => r.disconnect(), 5000)
-}
-
-process.on('SIGTERM', shutDown)
-process.on('SIGINT', shutDown)
 
 const handleInitError = (err: Error) => {
   if (err.message.toLowerCase().includes('already exists')) return
