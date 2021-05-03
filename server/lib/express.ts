@@ -21,7 +21,7 @@ const uploadHandler = (destination: string, maxSize?: number) => {
 }
 
 const errorHandler = (logger: BaseLogger) => (
-  err: Error & { serialize: () => string; getCode: () => number },
+  err: Error & { serialize: () => string; getCode: () => number; type?: string },
   _req: Request,
   res: Response,
   _next: NextFunction
@@ -30,6 +30,19 @@ const errorHandler = (logger: BaseLogger) => (
     logger.warn(err)
 
     return res.status(err.getCode()).json(err.serialize())
+  }
+
+  if (err.type?.includes('entity.parse.failed')) {
+    logger.warn(err)
+
+    return res.status(400).json({
+      error: {
+        name: 'ValidationError',
+        code: 400,
+        msg: 'Invalid body',
+        retryable: false
+      }
+    })
   }
 
   logger.error(err)

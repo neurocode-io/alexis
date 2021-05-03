@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express'
 import Redis from 'ioredis'
 
+import qaRouter from './answering/handler'
 import { redisConfig, serverConfig } from './config'
 import { errorHandler, sessionStore } from './lib/express'
 import logger from './lib/log'
@@ -24,6 +25,7 @@ app.get('/', (_req: Request, res: Response) => {
 })
 
 app.use('/v1', userRouter)
+app.use('/v1', qaRouter)
 app.use('/knowledge-source', pdfRouter)
 
 app.use(errorHandler(logger))

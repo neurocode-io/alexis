@@ -1,8 +1,7 @@
 import { serverConfig } from '../config'
 import log from '../lib/log'
-import { newClient, stream } from '../lib/redis'
-// import { createIdx } from '../users/service'
-// import { storePdf } from './store'
+import { arrayToObj, newClient, stream } from '../lib/redis'
+import { storePdf } from './store'
 
 const r = newClient()
 const processorNumber = process.argv[2] ?? 0
@@ -18,7 +17,7 @@ let backLog = true
 log.info(`Consumer ${consumerName} starting...`)
 
 const handleInitError = (err: Error) => {
-  if (err.message.toLowerCase().includes('already exists')) return
+  if (err.message.toLowerCase().includes('busygroup')) return
 
   throw err
 }
@@ -65,12 +64,11 @@ const start = async () => {
     //@ts-ignore
     const payload = Object.fromEntries(entries)
     const id = Object.keys(payload).shift() as string
-    const data = Object.fromEntries([payload[id]]) as { fileName: string; userId: string }
+    const data = arrayToObj(payload[id]) as { fileName: string; userId: string }
 
-    console.log(data)
-    // const pdfId = await storePdf(data.fileName)
+    log.info(`Processing ${data.fileName} for user: ${data.userId}`)
 
-    // await createIdx(pdfId)
+    await storePdf(data.fileName, data.userId)
 
     const ack = await r.xack(stream(streamName), groupName, id)
 

@@ -8,7 +8,7 @@ type AiOutput = {
   [key: string]: string | number
 }
 
-Redis.Command.setReplyTransformer('AI.INFO', (result: unknown[]) => {
+export const arrayToObj = (result: unknown[]) => {
   if (Array.isArray(result)) {
     const obj = {} as AiOutput
 
@@ -24,7 +24,9 @@ Redis.Command.setReplyTransformer('AI.INFO', (result: unknown[]) => {
   }
 
   return result
-})
+}
+
+Redis.Command.setReplyTransformer('AI.INFO', arrayToObj)
 
 Redis.Command.setReplyTransformer('JSON.GET', (result: string) => {
   return JSON.parse(result) as unknown

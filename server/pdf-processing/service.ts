@@ -1,10 +1,20 @@
 import { serverConfig } from '../config'
-import r, { stream } from '../lib/redis'
+import { getId } from '../lib/pdf'
+import r, { key, stream } from '../lib/redis'
 
 const startProcessing = async (fileName: string, userId: string) => {
+  //TODO check pdfId in userObject
+  //JSON.ARRINDEX <key> <path> <json-scalar> [start [stop]]
+  //Integer , specifically the position of the scalar value in the array, or -1 if unfound.
+  const pdfId = getId(fileName)
   const streamName = serverConfig.pdfStream
 
-  await r.xadd(stream(streamName), '*', 'fileName', fileName, 'user', userId)
+  await r
+    .multi([
+      ['xadd', stream(streamName), '*', 'fileName', fileName, 'userId', userId],
+      ['call', 'JSON.ARRAPPEND', key(userId), '.pdfs', JSON.stringify({ id: pdfId })]
+    ])
+    .exec()
 }
 
 export { startProcessing }

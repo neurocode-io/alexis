@@ -7,7 +7,9 @@ import { startProcessing } from './service'
 const router = Router()
 
 const uploadPdf = async (req: Request, res: Response) => {
-  await startProcessing(`${serverConfig.uploadDestionation}${req.file.filename}`, req.session.userId)
+  const userId = req.session.userId
+
+  await startProcessing(`${serverConfig.uploadDestionation}${req.file.filename}`, userId)
 
   res.redirect('/')
 }
