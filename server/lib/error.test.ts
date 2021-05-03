@@ -12,7 +12,7 @@ describe('lib/error', () => {
     } catch (err) {
       expect(err).toHaveProperty('serialize')
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      expect(JSON.parse(err.serialize())).toEqual({ error: testError })
+      expect(err.serialize()).toEqual({ error: testError })
     }
   })
 
