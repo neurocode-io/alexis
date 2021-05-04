@@ -18,16 +18,32 @@ const storePdf = async (fileName: string, userId: string) => {
   const transaction = r.multi()
 
   for await (const obj of getText(pdfContent)) {
-    const content = split(cleanText(obj.content))
-      .filter((node) => node.type === Syntax.Sentence)
-      .filter((sentence) => isSentence(sentence.raw))
-      .map((sentence) => sentence.raw)
-      .join(' ')
+    const sentences = split(cleanText(obj.content))
+    const perChunk = Math.ceil(sentences.length / 5)
+    const chunks: any[][] = sentences.reduce((resultArray: any[], item: any, index: number) => {
+      const chunkIndex = Math.floor(index / perChunk)
 
-    count += 1
-    const keyId = key(`pdfs:${userId}.${count}`)
+      if (!resultArray[chunkIndex]) {
+        resultArray[chunkIndex] = []
+      }
 
-    transaction.hset(keyId, { content, fileName })
+      resultArray[chunkIndex].push(item)
+
+      return resultArray
+    }, [])
+
+    for (let chunk of chunks) {
+      chunk
+        .filter((node) => node.type === Syntax.Sentence)
+        .filter((sentence) => isSentence(sentence.raw))
+        .map((sentence) => sentence.raw)
+        .join(' ')
+
+      count += 1
+      const keyId = key(`pdfs:${userId}.${count}`)
+
+      transaction.hset(keyId, { chunk, fileName })
+    }
   }
 
   await transaction.set(pdfIdx, count).exec()
