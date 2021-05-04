@@ -1,0 +1,53 @@
+### alexis
+@api = http://localhost:3000
+@email = test@test.is
+@password = 1password
+@contentType = application/json
+
+# @name register
+POST {{api}}/v1/users
+Content-Type: {{contentType}}
+
+{
+   "firstName": "Firster",
+   "lastName": "Laster",
+   "email": "{{email}}",
+   "password": "{{password}}"
+}
+
+###
+# @name login
+POST {{api}}/v1/login
+Content-Type: {{contentType}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+###
+# @name search
+POST {{api}}/v1/ask
+Content-Type: {{contentType}}
+
+{
+  "question": "What is etcd?"
+}
+
+###
+
+# ###
+# # @name upload
+# POST {{api}}/knowledge-source/pdf
+# Content-Type: multipart/form-data; boundary=----WebKitFormBoundarySdkmFdJUp00onZAB
+
+# ----WebKitFormBoundarySdkmFdJUp00onZAB
+# Content-Disposition: form-data; name="file-to-upload"
+
+# title
+# ----WebKitFormBoundarySdkmFdJUp00onZAB
+# Content-Disposition: form-data; name="file-to-upload"; filename="EffectiveAggregateDesign.pdf"
+# Content-Type: image/png
+
+# < ./EffectiveAggregateDesign.pdf
+# ----WebKitFormBoundarySdkmFdJUp00onZAB--

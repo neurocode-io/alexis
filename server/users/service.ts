@@ -12,16 +12,16 @@ const handleError = (err: Error) => {
   createError(errors.pdfIndexing, err)
 }
 
-const createIdx = async (pdfId: string) => {
+const createIdx = async (userId: string) => {
   await r
     .send_command(
       'FT.CREATE',
-      idx(pdfId),
+      idx(userId),
       'ON',
       'HASH',
       'PREFIX',
       '1',
-      key(`pdfs:${pdfId}`),
+      key(`pdfs:${userId}`),
       'SCHEMA',
       'content',
       'TEXT',
@@ -29,11 +29,6 @@ const createIdx = async (pdfId: string) => {
       'dm:en'
     )
     .catch(handleError)
-  // TODO add FT.INFO and check percent_indexed : progress of background indexing (1 if complete)
-}
-
-const attachPdf = async (userId: string, pdfId: string) => {
-  await r.send_command('JSON.ARRAPPEND', key(userId), '.pdfs', JSON.stringify({ id: pdfId }))
 }
 
 const createUser = async (user: CreateUserInput) => {
@@ -45,6 +40,7 @@ const createUser = async (user: CreateUserInput) => {
 
   user.password = await bcrypt.hash(password, saltRounds)
 
+  await createIdx(userId)
   await r
     .multi([
       ['call', 'JSON.SET', key(userId), '.', JSON.stringify(user)],
@@ -54,20 +50,16 @@ const createUser = async (user: CreateUserInput) => {
     .exec()
 }
 
-const checkUser = async (email: string, password: string): Promise<never | void> => {
+const checkUser = async (email: string, password: string): Promise<string | never> => {
   const userId = await r.hget(idx('email'), email)
 
   if (!userId) return createError(errors.validationError)
 
   const userPassword = await r.send_command('JSON.GET', key(userId), '.password')
 
-  if (await bcrypt.compare(password, userPassword)) return
+  if (!(await bcrypt.compare(password, userPassword))) createError(errors.validationError)
 
-  createError(errors.validationError)
+  return userId
 }
 
-const lookUp = async (idx: string, searchTerm: string) => {
-  await r.send_command('FT.SEARCH', idx, `@content:${searchTerm}`, 'SCORER', 'BM25', 'WITHSCORES', 'LIMIT', '0', '5')
-}
-
-export { attachPdf, checkUser, createIdx, createUser, lookUp }
+export { checkUser, createIdx, createUser }

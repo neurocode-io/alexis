@@ -15,7 +15,7 @@ const loginSchema = z.object({
 
 declare module 'express-session' {
   interface Session {
-    email: string
+    userId: string
     destroy(callback?: (err: Error) => void): this
   }
 }

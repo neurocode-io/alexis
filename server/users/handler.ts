@@ -20,19 +20,19 @@ const signup = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
   const loginInput = await loginSchema.parseAsync(req.body).catch((err) => createError(errors.validationError, err))
 
-  await s.checkUser(loginInput.email, loginInput.password)
-  req.session.email = loginInput.email
+  const userId = await s.checkUser(loginInput.email, loginInput.password)
 
+  req.session.userId = userId
   res.json({ result: 'ok' })
 }
 
 const logout = (req: Request, res: Response) => {
-  const { email } = req.session
+  const { userId } = req.session
 
-  if (email)
+  if (userId)
     req.session.destroy((err) => {
       log.warn(err)
-      log.warn(`Could not logout user ${email}`)
+      log.warn(`Could not logout user ${userId}`)
     })
 
   res.json({ result: 'ok' })

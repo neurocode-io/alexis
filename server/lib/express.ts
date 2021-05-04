@@ -4,9 +4,9 @@ import session from 'express-session'
 import multer from 'multer'
 import { BaseLogger } from 'pino'
 
-const uploadHandler = (maxSize?: number, destination?: string) => {
+const uploadHandler = (destination: string, maxSize?: number) => {
   const storage = multer.diskStorage({
-    destination: destination ?? 'uploads/',
+    destination,
     filename: (_, file, callback) => callback(null, file.originalname)
   })
 
@@ -21,7 +21,7 @@ const uploadHandler = (maxSize?: number, destination?: string) => {
 }
 
 const errorHandler = (logger: BaseLogger) => (
-  err: Error & { serialize: () => string; getCode: () => number },
+  err: Error & { serialize: () => string; getCode: () => number; type?: string },
   _req: Request,
   res: Response,
   _next: NextFunction
@@ -30,6 +30,19 @@ const errorHandler = (logger: BaseLogger) => (
     logger.warn(err)
 
     return res.status(err.getCode()).json(err.serialize())
+  }
+
+  if (err.type?.includes('entity.parse.failed')) {
+    logger.warn(err)
+
+    return res.status(400).json({
+      error: {
+        name: 'ValidationError',
+        code: 400,
+        msg: 'Invalid body',
+        retryable: false
+      }
+    })
   }
 
   logger.error(err)
@@ -56,7 +69,7 @@ const sessionStore = (opts: SessionInput) => {
     secret: opts.sessionSecret,
     store: new RedisStore({
       client: opts.redisClient,
-      prefix: 'session'
+      prefix: 'session:'
     }),
     name: opts.appName,
     resave: false,
@@ -68,12 +81,15 @@ const sessionStore = (opts: SessionInput) => {
 }
 
 const auth = (req: Request, res: Response, next: NextFunction) => {
-  const { email } = req.session
+  const { userId } = req.session
 
-  if (!email) {
+  if (!userId) {
     return res.status(401).json({
       error: {
-        name: 'AuthenticationError'
+        name: 'AuthenticationError',
+        code: 401,
+        msg: 'User is unauthenitcated',
+        retryable: false
       }
     })
   }

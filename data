@@ -62,3 +62,8 @@ FT.Search
 
 FT.SEARCH pdfIdx "@content:Benefits of infrastructure as code" SCORER BM25 WITHSCORES LIMIT 0 2
 FT.CREATE pdfIdx ON HASH PREFIX 1 ax:pdfs:f1d7c6695aeb087e48a6182130acf707 SCHEMA content TEXT PHONETIC dm:en
+
+set ax:idx:pdfs:userId 100
+inc ax:idx:pdfs:userId
+
+ax:pdfs:<userId>.1,2,3

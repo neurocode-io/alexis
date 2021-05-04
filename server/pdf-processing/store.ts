@@ -2,13 +2,20 @@ import { promises as fs } from 'fs'
 import { split, Syntax } from 'sentence-splitter'
 
 import { getText } from '../lib/pdf'
-import r, { key } from '../lib/redis'
+import r, { idx, key } from '../lib/redis'
 import { cleanText, isSentence } from '../lib/text'
 
-const storePdf = async (fileName: string) => {
-  const pdfContent = await fs.readFile(`./uploads/${fileName}`)
+const storePdf = async (fileName: string, userId: string) => {
+  const pdfContent = await fs.readFile(`${fileName}`)
+  const pdfIdx = idx(`pdfs:${userId}`)
 
-  let pdfId = ''
+  //optimistic locking in case we have two running processes for the user
+  //very unlikely because of the consumer working on 1 pdf at a time
+  await r.watch(pdfIdx)
+  const lastCount = (await r.get(pdfIdx)) as string
+  let count = parseInt(lastCount ?? 0)
+
+  const transaction = r.multi()
 
   for await (const obj of getText(pdfContent)) {
     const content = split(cleanText(obj.content))
@@ -17,14 +24,13 @@ const storePdf = async (fileName: string) => {
       .map((sentence) => sentence.raw)
       .join(' ')
 
-    pdfId = obj.id
+    count += 1
+    const keyId = key(`pdfs:${userId}.${count}`)
 
-    const keyId = key(`pdfs:${pdfId}.${obj.page}`)
-
-    await r.hset(keyId, { content, fileName })
+    transaction.hset(keyId, { content, fileName })
   }
 
-  return pdfId
+  await transaction.set(pdfIdx, count).exec()
 }
 
 export { storePdf }

@@ -25,8 +25,14 @@ async function* getText(data: Buffer) {
     const text = await page.getTextContent()
     const content = text.items.map((item: { str: string }) => item.str).join(' ')
 
-    yield { id: pdf.fingerprint, page: i, content }
+    yield { page: i, content }
   }
 }
 
-export { getText }
+const getId = async (filePath: string) => {
+  const pdf = await PDFJS.getDocument(filePath).promise
+
+  return pdf.fingerprint
+}
+
+export { getId, getText }

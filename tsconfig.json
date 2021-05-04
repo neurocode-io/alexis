@@ -1,7 +1,6 @@
 // https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "./server/users/types"],
     "lib": ["ES2019"],
     "removeComments": true,
     "module": "CommonJS",
