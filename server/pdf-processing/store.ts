@@ -5,6 +5,8 @@ import { getText } from '../lib/pdf'
 import r, { idx, key } from '../lib/redis'
 import { cleanText, isSentence } from '../lib/text'
 
+const PAGE_SPLIT_FACTOR = 10
+
 const storePdf = async (fileName: string, userId: string) => {
   const pdfContent = await fs.readFile(`${fileName}`)
   const pdfIdx = idx(`pdfs:${userId}`)
@@ -19,7 +21,7 @@ const storePdf = async (fileName: string, userId: string) => {
 
   for await (const obj of getText(pdfContent)) {
     const sentences = split(cleanText(obj.content))
-    const perChunk = Math.ceil(sentences.length / 5)
+    const perChunk = Math.ceil(sentences.length / PAGE_SPLIT_FACTOR)
     const chunks: any[][] = sentences.reduce((resultArray: any[], item: any, index: number) => {
       const chunkIndex = Math.floor(index / perChunk)
 
