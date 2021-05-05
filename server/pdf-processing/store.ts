@@ -21,30 +21,28 @@ const storePdf = async (fileName: string, userId: string) => {
 
   for await (const obj of getText(pdfContent)) {
     const sentences = split(cleanText(obj.content))
-    const perChunk = Math.ceil(sentences.length / PAGE_SPLIT_FACTOR)
-    const chunks: any[][] = sentences.reduce((resultArray: any[], item: any, index: number) => {
-      const chunkIndex = Math.floor(index / perChunk)
+      .filter((node: any) => node.type === Syntax.Sentence)
+      .filter((sentence: any) => isSentence(sentence.raw))
+      .map((sentence: any) => sentence.raw)
+    const perParagraph = Math.ceil(sentences.length / PAGE_SPLIT_FACTOR)
+    const paragraphs: any = sentences.reduce((resultArray: any[], item: any, index: number) => {
+      const paragraphIndex = Math.floor(index / perParagraph)
 
-      if (!resultArray[chunkIndex]) {
-        resultArray[chunkIndex] = []
+      if (!resultArray[paragraphIndex]) {
+        resultArray[paragraphIndex] = []
       }
 
-      resultArray[chunkIndex].push(item)
+      resultArray[paragraphIndex].push(item)
 
       return resultArray
     }, [])
 
-    for (let chunk of chunks) {
-      chunk
-        .filter((node) => node.type === Syntax.Sentence)
-        .filter((sentence) => isSentence(sentence.raw))
-        .map((sentence) => sentence.raw)
-        .join(' ')
+    for (const paragraph of paragraphs) {
+      const content = paragraph.join(' ')
 
-      count += 1
-      const keyId = key(`pdfs:${userId}.${count}`)
+      const keyId = key(`pdfs:${userId}.${++count}`)
 
-      transaction.hset(keyId, { chunk, fileName })
+      transaction.hset(keyId, { content, fileName })
     }
   }
 
