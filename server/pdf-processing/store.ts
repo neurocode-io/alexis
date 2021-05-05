@@ -7,6 +7,18 @@ import { cleanText, isSentence } from '../lib/text'
 
 const PAGE_SPLIT_FACTOR = 10
 
+const chunk = <T>(array: T[], chunkSize: number): T[][] => {
+  if (chunkSize <= 0) throw new Error('Invalid chunk size')
+
+  const R = []
+
+  for (let i = 0, len = array.length; i < len; i += chunkSize) R.push(array.slice(i, i + chunkSize))
+
+  return R
+}
+
+export { chunk }
+
 const storePdf = async (fileName: string, userId: string) => {
   const pdfContent = await fs.readFile(`${fileName}`)
   const pdfIdx = idx(`pdfs:${userId}`)
@@ -21,21 +33,11 @@ const storePdf = async (fileName: string, userId: string) => {
 
   for await (const obj of getText(pdfContent)) {
     const sentences = split(cleanText(obj.content))
-      .filter((node: any) => node.type === Syntax.Sentence)
-      .filter((sentence: any) => isSentence(sentence.raw))
-      .map((sentence: any) => sentence.raw)
-    const perParagraph = Math.ceil(sentences.length / PAGE_SPLIT_FACTOR)
-    const paragraphs: any = sentences.reduce((resultArray: any[], item: any, index: number) => {
-      const paragraphIndex = Math.floor(index / perParagraph)
+      .filter((node) => node.type === Syntax.Sentence)
+      .filter((sentence) => isSentence(sentence.raw))
+      .map((sentence) => sentence.raw)
 
-      if (!resultArray[paragraphIndex]) {
-        resultArray[paragraphIndex] = []
-      }
-
-      resultArray[paragraphIndex].push(item)
-
-      return resultArray
-    }, [])
+    const paragraphs = chunk(sentences, PAGE_SPLIT_FACTOR)
 
     for (const paragraph of paragraphs) {
       const content = paragraph.join(' ')
