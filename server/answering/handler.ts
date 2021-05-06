@@ -20,9 +20,11 @@ const ask = async (req: Request, res: Response) => {
   const result = await Promise.all(
     content
       .split('....')
-      .filter(contentOption => contentOption.length > 0)
+      .filter((contentOption) => contentOption.length > 0)
       .map((contentOption) => {
         console.log(contentOption)
+        console.log('contentOption finihsed')
+
         return getAnswer(input.question, contentOption)
       })
   )

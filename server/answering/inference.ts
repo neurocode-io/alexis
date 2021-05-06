@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 
+import { numberBetween } from '../lib/math'
 import r, { key } from '../lib/redis'
 
 type AiInfoOutput = {
@@ -22,10 +23,10 @@ const runInference = async (
   encodedIds: number[],
   attentionMask: number[]
 ): Promise<{ ansStart: number[]; ansEnd: number[] }> => {
-  const inputKey = key(`enc_input_ids`)
-  const attentionMaskKey = key(`enc_attention_mask`)
-  const outputStartScore = key(`answer_start_score`)
-  const outputEndScore = key(`answer_end_score`)
+  const inputKey = key(`enc_input_ids`) + `${numberBetween(0, 10000)}`
+  const attentionMaskKey = key(`enc_attention_mask`) + `${numberBetween(0, 10000)}`
+  const outputStartScore = key(`answer_start_score`) + `${numberBetween(0, 10000)}`
+  const outputEndScore = key(`answer_end_score`) + `${numberBetween(0, 10000)}`
 
   await Promise.all([
     r.send_command('AI.TENSORSET', inputKey, 'int64', 1, 512, 'VALUES', encodedIds),
