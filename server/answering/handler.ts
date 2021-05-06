@@ -3,7 +3,6 @@ import * as z from 'zod'
 
 import { safeRouteHandler } from '../lib/express'
 import { getAnswer } from './qa'
-// import { getAnswer } from './qa'
 import { lookUp } from './search'
 
 const router = Router()
@@ -17,13 +16,15 @@ const ask = async (req: Request, res: Response) => {
   const userId = req.session.userId
 
   const resp = await lookUp(userId, input.question)
-
-  console.log(resp)
-
+  const { content } = resp
   const result = await Promise.all(
-    resp.map(({ content }) => {
-      return getAnswer(input.question, content)
-    })
+    content
+      .split('....')
+      .filter(contentOption => contentOption.length > 0)
+      .map((contentOption) => {
+        console.log(contentOption)
+        return getAnswer(input.question, contentOption)
+      })
   )
 
   res.status(200).json(result)
