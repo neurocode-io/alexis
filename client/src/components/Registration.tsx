@@ -1,14 +1,14 @@
 //@ts-check
 //@ts-ignore
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import { withStyles } from '@material-ui/core/styles'
+import { WithStyles } from '@material-ui/core'
 import { register } from './styles'
 import InputAdornment from '@material-ui/core/InputAdornment'
 
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Paper from '@material-ui/core/Paper'
 import Avatar from '@material-ui/core/Avatar'
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt'
 import { FormControl, Input, InputLabel, Button } from '@material-ui/core'
 import Snackbar from '@material-ui/core/Snackbar'
 import SnackbarContent from '@material-ui/core/SnackbarContent'
@@ -17,196 +17,184 @@ import ErrorIcon from '@material-ui/icons/Error'
 import VisibilityTwoToneIcon from '@material-ui/icons/VisibilityTwoTone'
 import VisibilityOffTwoToneIcon from '@material-ui/icons/VisibilityOffTwoTone'
 import CloseIcon from '@material-ui/icons/Close'
+import avatar from './avatar.png'
 
-class Registration extends Component {
-  state = {
+interface Props extends WithStyles<typeof register> {}
+
+const Registration = (props: Props) => {
+  const { classes } = props
+  const [state, setState] = useState({
     email: '',
     password: '',
     passwordConfrim: '',
     hidePassword: true,
-    error: null,
+    error: '',
     errorOpen: false
-  }
+  })
 
-  errorClose = () => {
-    this.setState({
-      errorOpen: false
-    })
-  }
+  const errorClose = () => setState({ ...state, errorOpen: false })
+  const handleChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setState({ ...state, [name]: e.target.value })
+  const passwordMatch = () => state.password === state.passwordConfrim
+  const showPassword = () => setState((state) => ({ ...state, hidePassword: !state.hidePassword }))
 
-  handleChange = (name: string) => (e: Event) => {
-    this.setState({
-      [name]: e.target?.value
-    })
-  }
-
-  passwordMatch = () => this.state.password === this.state.passwordConfrim
-
-  showPassword = () => {
-    this.setState((prevState) => ({ hidePassword: false }))
-  }
-
-  isValid = () => {
-    if (this.state.email === '') {
-      return false
-    }
-    return true
-  }
-  submitRegistration = (e: Event) => {
+  const isValid = () => (state.email === '' ? false : true)
+  const submitRegistration = (e: React.MouseEvent) => {
     e.preventDefault()
-    if (!this.passwordMatch()) {
-      this.setState({
-        errorOpen: true,
-        error: "Passwords don't match"
-      })
+    if (!passwordMatch()) {
+      setState({ ...state, errorOpen: true, error: 'Passwords do not match' })
     }
-    const newUserCredentials = {
-      email: this.state.email,
-      password: this.state.password,
-      passwordConfrim: this.state.passwordConfrim
-    }
-    console.log('this.props.newUserCredentials', newUserCredentials)
-    //dispath to userActions
+    // send to backend
   }
 
-  render() {
-    const { classes } = this.props
-    return (
-      <div className={classes.main}>
-        <CssBaseline />
+  return (
+    <div className={classes.main}>
+      <CssBaseline />
 
-        <Paper className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <PeopleAltIcon className={classes.icon} />
-          </Avatar>
-          <form className={classes.form} onSubmit={() => this.submitRegistration}>
-            <FormControl required fullWidth margin="normal">
-              <InputLabel htmlFor="email" className={classes.labels}>
-                e-mail
-              </InputLabel>
-              <Input
-                name="email"
-                type="email"
-                autoComplete="email"
-                className={classes.inputs}
-                disableUnderline={true}
-                onChange={this.handleChange('email')}
-              />
-            </FormControl>
+      <Paper className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <img className={classes.icon} src={avatar} alt="Avatar" />
+        </Avatar>
+        <form className={classes.form} onSubmit={() => submitRegistration}>
+          <FormControl required fullWidth margin="normal">
+            <InputLabel htmlFor="email" className={classes.labels}>
+              e-mail
+            </InputLabel>
+            <Input
+              name="email"
+              type="email"
+              autoComplete="email"
+              className={classes.inputs}
+              disableUnderline={true}
+              onChange={handleChange('email')}
+            />
+          </FormControl>
 
-            <FormControl required fullWidth margin="normal">
-              <InputLabel htmlFor="password" className={classes.labels}>
-                password
-              </InputLabel>
-              <Input
-                name="password"
-                autoComplete="password"
-                className={classes.inputs}
-                disableUnderline={true}
-                onChange={this.handleChange('password')}
-                type={this.state.hidePassword ? 'password' : 'input'}
-                endAdornment={
-                  this.state.hidePassword ? (
-                    <InputAdornment position="end">
-                      <VisibilityOffTwoToneIcon
-                        fontSize="default"
-                        className={classes.passwordEye}
-                        onClick={this.showPassword}
-                      />
-                    </InputAdornment>
-                  ) : (
-                    <InputAdornment position="end">
-                      <VisibilityTwoToneIcon
-                        fontSize="default"
-                        className={classes.passwordEye}
-                        onClick={this.showPassword}
-                      />
-                    </InputAdornment>
-                  )
-                }
-              />
-            </FormControl>
+          <FormControl required fullWidth margin="normal">
+            <InputLabel htmlFor="password" className={classes.labels}>
+              password
+            </InputLabel>
+            <Input
+              name="password"
+              autoComplete="password"
+              className={classes.inputs}
+              disableUnderline={true}
+              onChange={handleChange('password')}
+              type={state.hidePassword ? 'password' : 'input'}
+              endAdornment={
+                state.hidePassword ? (
+                  <InputAdornment position="end">
+                    <VisibilityOffTwoToneIcon
+                      fontSize="default"
+                      className={classes.passwordEye}
+                      onClick={() => showPassword()}
+                    />
+                  </InputAdornment>
+                ) : (
+                  <InputAdornment position="end">
+                    <VisibilityTwoToneIcon
+                      fontSize="default"
+                      className={classes.passwordEye}
+                      onClick={() => showPassword()}
+                    />
+                  </InputAdornment>
+                )
+              }
+            />
+          </FormControl>
 
-            <FormControl required fullWidth margin="normal">
-              <InputLabel htmlFor="passwordConfrim" className={classes.labels}>
-                confrim password
-              </InputLabel>
-              <Input
-                name="passwordConfrim"
-                autoComplete="passwordConfrim"
-                className={classes.inputs}
-                disableUnderline={true}
-                onClick={this.state.showPassword}
-                onChange={this.handleChange('passwordConfrim')}
-                type={this.state.hidePassword ? 'password' : 'input'}
-                endAdornment={
-                  this.state.hidePassword ? (
-                    <InputAdornment position="end">
-                      <VisibilityOffTwoToneIcon
-                        fontSize="default"
-                        className={classes.passwordEye}
-                        onClick={this.showPassword}
-                      />
-                    </InputAdornment>
-                  ) : (
-                    <InputAdornment position="end">
-                      <VisibilityTwoToneIcon
-                        fontSize="default"
-                        className={classes.passwordEye}
-                        onClick={this.showPassword}
-                      />
-                    </InputAdornment>
-                  )
-                }
-              />
-            </FormControl>
-            <Button
-              disabled={!this.isValid()}
-              disableFocusRipple
-              fullWidth
-              variant="outlined"
-              className={classes.button}
-              type="outlined"
-              onClick={this.submitRegistration}
-            >
-              Join
-            </Button>
-          </form>
+          <FormControl required fullWidth margin="normal">
+            <InputLabel htmlFor="passwordConfrim" className={classes.labels}>
+              confrim password
+            </InputLabel>
+            <Input
+              name="passwordConfrim"
+              autoComplete="passwordConfrim"
+              className={classes.inputs}
+              disableUnderline={true}
+              onClick={showPassword}
+              onChange={handleChange('passwordConfrim')}
+              type={state.hidePassword ? 'password' : 'input'}
+              endAdornment={
+                state.hidePassword ? (
+                  <InputAdornment position="end">
+                    <VisibilityOffTwoToneIcon
+                      fontSize="default"
+                      className={classes.passwordEye}
+                      onClick={() => showPassword()}
+                    />
+                  </InputAdornment>
+                ) : (
+                  <InputAdornment position="end">
+                    <VisibilityTwoToneIcon
+                      fontSize="default"
+                      className={classes.passwordEye}
+                      onClick={() => showPassword()}
+                    />
+                  </InputAdornment>
+                )
+              }
+            />
+          </FormControl>
+          <Button
+            component="button"
+            disabled={!isValid()}
+            disableFocusRipple
+            fullWidth
+            variant="outlined"
+            className={classes.button}
+            type="submit"
+            onClick={submitRegistration}
+          >
+            Join
+          </Button>
+        </form>
 
-          {this.state.error ? (
-            <Snackbar
-              // variant=""
-              key={this.state.error}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center'
-              }}
-              open={this.state.errorOpen}
-              onClose={this.errorClose}
-              autoHideDuration={3000}
-            >
-              <SnackbarContent
-                className={classes.error}
-                message={
-                  <div>
-                    <span style={{ marginRight: '8px' }}>
-                      <ErrorIcon fontSize="large" color="error" />
-                    </span>
-                    <span> {this.state.error} </span>
-                  </div>
-                }
-                action={[
-                  <IconButton key="close" aria-label="close" onClick={this.errorClose}>
-                    <CloseIcon color="error" />
-                  </IconButton>
-                ]}
-              />
-            </Snackbar>
-          ) : null}
-        </Paper>
-      </div>
-    )
-  }
+        {state.error ? (
+          <Snackbar
+            // variant=""
+            key={state.error}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center'
+            }}
+            open={state.errorOpen}
+            onClose={errorClose}
+            autoHideDuration={3000}
+          >
+            <SnackbarContent
+              className={classes.error}
+              message={
+                <div>
+                  <span style={{ marginRight: '8px' }}>
+                    <ErrorIcon fontSize="large" color="error" />
+                  </span>
+                  <span> {state.error} </span>
+                </div>
+              }
+              action={[
+                <IconButton key="close" aria-label="close" onClick={errorClose}>
+                  <CloseIcon color="error" />
+                </IconButton>
+              ]}
+            />
+          </Snackbar>
+        ) : null}
+      </Paper>
+    </div>
+  )
 }
+// class Registration extends Component<Props> {
+//   state = {
+//     email: '',
+//     password: '',
+//     passwordConfrim: '',
+//     hidePassword: true,
+//     error: null,
+//     errorOpen: false
+//   }
+
+//   }
+// }
 
 export default withStyles(register)(Registration)
