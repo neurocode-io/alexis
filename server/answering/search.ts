@@ -5,7 +5,7 @@ function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
 }
 
 const lookUp = async (userId: string, searchTerm: string) => {
-  const resp = ((await r.send_command(
+  const resp = (await r.send_command(
     'FT.SEARCH',
     idx(userId),
     `@content:${searchTerm}`,
@@ -15,18 +15,18 @@ const lookUp = async (userId: string, searchTerm: string) => {
     'LIMIT',
     '0',
     '3',
-    "SUMMARIZE",
-    "LEN",
-    "100",
-    "FRAGS",
-    "1",
-    "SEPARATOR",
-    "...."
+    'SUMMARIZE',
+    'LEN',
+    '100',
+    'FRAGS',
+    '1',
+    'SEPARATOR',
+    '....'
     // "HIGHLIGHT",
     // "TAGS",
     // "{BeginTag/",
     // "/EndTag}"
-  )) as Array<string | string[]> )
+  )) as Array<string | string[]>
 
   return resp
     .map((item) => {
