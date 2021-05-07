@@ -14,10 +14,19 @@ const lookUp = async (userId: string, searchTerm: string) => {
     'WITHSCORES',
     'LIMIT',
     '0',
-    '3'
+    '3',
+    'SUMMARIZE',
+    'LEN',
+    '100',
+    'FRAGS',
+    '1',
+    'SEPARATOR',
+    '....'
+    // "HIGHLIGHT",
+    // "TAGS",
+    // "{BeginTag/",
+    // "/EndTag}"
   )) as Array<string | string[]>
-
-  console.log(resp)
 
   return resp
     .map((item) => {
