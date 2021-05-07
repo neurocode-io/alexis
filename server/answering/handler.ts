@@ -14,19 +14,17 @@ const searchSchema = z.object({
 const ask = async (req: Request, res: Response) => {
   const input = await searchSchema.parseAsync(req.body)
   const userId = req.session.userId
-
   const resp = await lookUp(userId, input.question)
-  const { content } = resp
-  const result = await Promise.all(
-    content
-      .split('....')
-      .filter((contentOption) => contentOption.length > 0)
-      .map((contentOption) => {
-        console.log(contentOption)
-        console.log('contentOption finihsed')
 
-        return getAnswer(input.question, contentOption)
-      })
+  console.log(resp)
+
+  const result = await Promise.all(
+    resp.map(({ content }) => {
+      console.log(content)
+      console.log('content finihsed')
+
+      return getAnswer(input.question, content)
+    })
   )
 
   res.status(200).json(result)
