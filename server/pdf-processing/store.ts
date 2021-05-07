@@ -27,16 +27,18 @@ const storePdf = async (fileName: string, userId: string) => {
     contentArray.unshift(remainder)
 
     remainder = contentArray.pop() ?? ''
-    console.log('lastSentence: ' + remainder)
-
+    
     const content = contentArray.join(' ')
     console.log('page: ' + content)
+    console.log('lastSentence: ' + remainder)
 
-    count += 1
-    const keyId = key(`pdfs:${userId}.${count}`)
-
+    const keyId = key(`pdfs:${userId}.${++count}`)
     transaction.hset(keyId, { content, fileName })
   }
+
+  console.log('lastPage: ' + remainder)
+  const keyId = key(`pdfs:${userId}.${++count}`)
+  transaction.hset(keyId, { content: remainder, fileName })
 
   await transaction.set(pdfIdx, count).exec()
 }
