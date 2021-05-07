@@ -2,8 +2,8 @@ import express, { Request, Response, Router } from 'express'
 import * as z from 'zod'
 
 import { safeRouteHandler } from '../lib/express'
+import log from '../lib/log'
 import { getAnswer } from './qa'
-// import { getAnswer } from './qa'
 import { lookUp } from './search'
 
 const router = Router()
@@ -15,13 +15,15 @@ const searchSchema = z.object({
 const ask = async (req: Request, res: Response) => {
   const input = await searchSchema.parseAsync(req.body)
   const userId = req.session.userId
-
   const resp = await lookUp(userId, input.question)
 
-  console.log(resp)
+  log.debug(resp)
 
   const result = await Promise.all(
     resp.map(({ content }) => {
+      log.debug(content)
+      log.debug('content finihsed')
+
       return getAnswer(input.question, content)
     })
   )
