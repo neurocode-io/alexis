@@ -6,7 +6,6 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Paper from '@material-ui/core/Paper'
-import Avatar from '@material-ui/core/Avatar'
 import { FormControl, Input, InputLabel, Button } from '@material-ui/core'
 import Snackbar from '@material-ui/core/Snackbar'
 import SnackbarContent from '@material-ui/core/SnackbarContent'
@@ -15,19 +14,15 @@ import ErrorIcon from '@material-ui/icons/Error'
 import VisibilityTwoToneIcon from '@material-ui/icons/VisibilityTwoTone'
 import VisibilityOffTwoToneIcon from '@material-ui/icons/VisibilityOffTwoTone'
 import CloseIcon from '@material-ui/icons/Close'
-import avatar from './avatar.png'
 import { Link } from 'react-router-dom'
 
 interface Props extends WithStyles<typeof register> {}
 
-const Registration = (props: Props) => {
+const Login = (props: Props) => {
   const { classes } = props
   const [state, setState] = useState({
     email: '',
-    firstName: '',
-    lastName: '',
     password: '',
-    passwordConfrim: '',
     hidePassword: true,
     error: '',
     errorOpen: false
@@ -36,50 +31,20 @@ const Registration = (props: Props) => {
   const errorClose = () => setState({ ...state, errorOpen: false })
   const handleChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setState({ ...state, [name]: e.target.value })
-  const passwordMatch = () => state.password === state.passwordConfrim
   const showPassword = () => setState((state) => ({ ...state, hidePassword: !state.hidePassword }))
 
   const isValid = () => (state.email === '' ? false : true)
-  const submitRegistration = (e: React.MouseEvent) => {
+  const submitLogin = (e: React.MouseEvent) => {
     e.preventDefault()
-    if (!passwordMatch()) {
-      setState({ ...state, errorOpen: true, error: 'Passwords do not match' })
-    }
-    console.log('register')
+    console.log('login')
     // send to backend
   }
 
   return (
     <div className={classes.main}>
       <CssBaseline />
-
       <Paper className={classes.paper}>
-        {/* <Avatar className={classes.avatar}>
-          <img className={classes.icon} src={avatar} alt="Avatar" />
-        </Avatar> */}
-        <form className={classes.form} onSubmit={() => submitRegistration}>
-          <FormControl required fullWidth margin="normal">
-            <InputLabel htmlFor="name" className={classes.labels}>
-              First name
-            </InputLabel>
-            <Input
-              name="firstName"
-              className={classes.inputs}
-              disableUnderline={true}
-              onChange={handleChange('firstName')}
-            />
-          </FormControl>
-          <FormControl required fullWidth margin="normal">
-            <InputLabel htmlFor="name" className={classes.labels}>
-              Last name
-            </InputLabel>
-            <Input
-              name="lastName"
-              className={classes.inputs}
-              disableUnderline={true}
-              onChange={handleChange('lastName')}
-            />
-          </FormControl>
+        <form className={classes.form} onSubmit={() => submitLogin}>
           <FormControl required fullWidth margin="normal">
             <InputLabel htmlFor="email" className={classes.labels}>
               e-mail
@@ -126,40 +91,6 @@ const Registration = (props: Props) => {
               }
             />
           </FormControl>
-
-          <FormControl required fullWidth margin="normal">
-            <InputLabel htmlFor="passwordConfrim" className={classes.labels}>
-              confrim password
-            </InputLabel>
-            <Input
-              name="passwordConfrim"
-              autoComplete="passwordConfrim"
-              className={classes.inputs}
-              disableUnderline={true}
-              onClick={showPassword}
-              onChange={handleChange('passwordConfrim')}
-              type={state.hidePassword ? 'password' : 'input'}
-              endAdornment={
-                state.hidePassword ? (
-                  <InputAdornment position="end">
-                    <VisibilityOffTwoToneIcon
-                      fontSize="default"
-                      className={classes.passwordEye}
-                      onClick={() => showPassword()}
-                    />
-                  </InputAdornment>
-                ) : (
-                  <InputAdornment position="end">
-                    <VisibilityTwoToneIcon
-                      fontSize="default"
-                      className={classes.passwordEye}
-                      onClick={() => showPassword()}
-                    />
-                  </InputAdornment>
-                )
-              }
-            />
-          </FormControl>
           <Button
             component="button"
             disabled={!isValid()}
@@ -168,16 +99,15 @@ const Registration = (props: Props) => {
             variant="outlined"
             className={classes.button}
             type="submit"
-            onClick={submitRegistration}
+            onClick={submitLogin}
           >
             Join
           </Button>
         </form>
 
-        <Link className={classes.isMember} to="/login">
-          Already a member?
+        <Link className={classes.isMember} to="/">
+          Not a member yet?
         </Link>
-
         {state.error ? (
           <Snackbar
             // variant=""
@@ -213,4 +143,4 @@ const Registration = (props: Props) => {
   )
 }
 
-export default withStyles(register)(Registration)
+export default withStyles(register)(Login)

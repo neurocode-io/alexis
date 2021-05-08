@@ -15,11 +15,15 @@ export const register = (theme: Theme) =>
       marginLeft: theme.spacing(3),
       display: 'block',
       width: 'auto',
-      [theme.breakpoints.up(400 + theme.spacing(2))]: {
-        width: 400,
+      [theme.breakpoints.up(800)]: {
+        width: 1200,
         marginLeft: 'auto',
         marginRight: 'auto'
       }
+    },
+    instructions: {
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(1)
     },
     paper: {
       position: 'relative',
@@ -29,11 +33,7 @@ export const register = (theme: Theme) =>
       flexDirection: 'column',
       alignItems: 'center',
       background: 'linear-gradient(180deg, rgba(169,198,217,1) 15%, rgba(242,167,75,1) 90%)',
-      boxShadow: '.2px 12px 18px rgba(131,153,167,0.6)',
-
-      '&:hover': {
-        boxShadow: '0px 24px 36px rgba(131,153,167,0.99)'
-      }
+      boxShadow: '.2px 12px 18px rgba(131,153,167,0.6)'
     },
     avatar: {
       marginTop: 20,
@@ -51,7 +51,8 @@ export const register = (theme: Theme) =>
     },
 
     form: {
-      margin: theme.spacing(4)
+      margin: theme.spacing(4),
+      maxWidth: 400
     },
     labels: {
       padding: `${theme.spacing(1)}px ${theme.spacing(4)}px`,
@@ -146,5 +147,10 @@ export const register = (theme: Theme) =>
     passwordEye: {
       color: 'rgba(131,153,167,0.9)',
       opacity: 0.7
+    },
+
+    isMember: {
+      marginTop: '10px',
+      color: textDark
     }
   })
