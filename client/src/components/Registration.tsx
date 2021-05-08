@@ -154,7 +154,6 @@ const Registration = (props: Props) => {
               autoComplete="passwordConfrim"
               className={classes.inputs}
               disableUnderline={true}
-              onClick={showPassword}
               onChange={handleChange('passwordConfrim')}
               type={state.hidePassword ? 'password' : 'input'}
               endAdornment={

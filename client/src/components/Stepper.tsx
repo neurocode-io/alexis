@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { makeStyles, withStyles } from '@material-ui/core/styles'
-import { WithStyles } from '@material-ui/core'
+import { Box, Grid, WithStyles } from '@material-ui/core'
 
 import clsx from 'clsx'
 import Stepper from '@material-ui/core/Stepper'
@@ -138,33 +138,31 @@ const CustomizedSteppers = (props: Props) => {
             </Step>
           ))}
         </Stepper>
-        <div>
-          {activeStep === steps.length ? (
+        {activeStep === steps.length ? (
+          <div>
+            <Typography className={classes.instructions}>All steps completed - you&apos;re finished</Typography>
+            <Button onClick={handleReset} className={classes.button}>
+              Reset
+            </Button>
+          </div>
+        ) : (
+          <div style={{ display: 'contents' }}>
+            <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
             <div>
-              <Typography className={classes.instructions}>All steps completed - you&apos;re finished</Typography>
-              <Button onClick={handleReset} className={classes.button}>
-                Reset
+              <Button
+                disabled={activeStep === 0}
+                onClick={handleBack}
+                className={classes.button}
+                style={{ marginRight: '20px' }}
+              >
+                Back
+              </Button>
+              <Button variant="contained" color="primary" onClick={handleNext} className={classes.button}>
+                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
               </Button>
             </div>
-          ) : (
-            <div>
-              <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
-              <div>
-                <Button
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
-                  className={classes.button}
-                  style={{ marginRight: '20px' }}
-                >
-                  Back
-                </Button>
-                <Button variant="contained" color="primary" onClick={handleNext} className={classes.button}>
-                  {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </Paper>
     </div>
   )
