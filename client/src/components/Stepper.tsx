@@ -100,14 +100,14 @@ const CustomizedSteppers = (props: Props) => {
       const resp = await fetch('/v1/me')
       const me = await resp.json()
 
-      if (!me.ok) history.push('/login')
+      if (!me.email) history.push('/login')
     }
     getMe().catch(() => history.push('/login'))
   }, [history])
 
   const { classes } = props
 
-  const [activeStep, setActiveStep] = useState(1)
+  const [activeStep, setActiveStep] = useState(0)
   const steps = getSteps()
 
   const handleNext = () => {
