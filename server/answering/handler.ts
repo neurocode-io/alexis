@@ -1,12 +1,44 @@
 import express, { Request, Response, Router } from 'express'
 import * as z from 'zod'
 
+import { split, Syntax } from 'sentence-splitter'
 import { safeRouteHandler } from '../lib/express'
 import log from '../lib/log'
 import { getAnswer } from './qa'
 import { lookUp } from './search'
+import { isSentence } from '../lib/text'
+
+const MAX_BUFFER_SIZE = 256
+const MAX_QUESTION_SIZE = 50
+const MAX_PARAGRAPH_SIZE = MAX_BUFFER_SIZE - MAX_QUESTION_SIZE
 
 const router = Router()
+
+const getParagraphs = (page: string) => {
+  let paragraphs: string[] = []
+  let paragraph: string[] = []
+
+  const sentences = split(page)
+  .filter((node) => node.type === Syntax.Sentence)
+  .filter((sentence) => isSentence(sentence.raw))
+  .map((sentence) => sentence.raw)
+
+  for (let sentence of sentences) {
+    const words = sentence.split(' ')
+    if (words.length + paragraph.length > MAX_PARAGRAPH_SIZE) {
+      paragraphs.push(paragraph.join(' ').slice(0))
+      paragraph = []
+    }
+
+    paragraph = paragraph.concat(words)
+  }
+
+  if (paragraph.length) {
+    paragraphs.push(paragraph.join(' '))
+  }
+
+  return paragraphs
+}
 
 const searchSchema = z.object({
   question: z.string()
@@ -20,11 +52,15 @@ const ask = async (req: Request, res: Response) => {
   log.debug(resp)
 
   const result = await Promise.all(
-    resp.map(({ content }) => {
-      log.debug(content)
-      log.debug('content finihsed')
+    resp.map(async ({ content }) => {
+      if(!content) return {answer: '', score: 100}
 
-      return getAnswer(input.question, content)
+      return await Promise.all(
+        getParagraphs(content).map( (paragraph) => { 
+        log.debug(paragraph) 
+        return getAnswer(input.question, paragraph)
+      })
+      )
     })
   )
 
