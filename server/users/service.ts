@@ -62,4 +62,11 @@ const checkUser = async (email: string, password: string): Promise<string | neve
   return userId
 }
 
-export { checkUser, createIdx, createUser }
+const getUser = async (userId: string) => {
+  const user = await r.send_command('JSON.GET', key(userId))
+  const { password, ...payload } = user
+
+  return payload as string
+}
+
+export { checkUser, createIdx, createUser, getUser }

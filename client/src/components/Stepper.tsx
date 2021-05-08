@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { makeStyles, withStyles } from '@material-ui/core/styles'
 import { WithStyles } from '@material-ui/core'
 
@@ -8,13 +8,13 @@ import Step from '@material-ui/core/Step'
 import Paper from '@material-ui/core/Paper'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import StepLabel from '@material-ui/core/StepLabel'
-import AccountCircleIcon from '@material-ui/icons/AccountCircle'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import FindInPageIcon from '@material-ui/icons/FindInPage'
 import StepConnector from '@material-ui/core/StepConnector'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import { register } from './styles'
+import { useHistory } from 'react-router'
 
 const ColorlibConnector = withStyles({
   alternativeLabel: {
@@ -64,9 +64,8 @@ const ColorlibStepIcon = (props: { active: boolean; completed: boolean; icon: nu
   const { active, completed, icon } = props
 
   const icons = new Map<number, JSX.Element>()
-  icons.set(1, <AccountCircleIcon />)
-  icons.set(2, <CloudUploadIcon />)
-  icons.set(3, <FindInPageIcon />)
+  icons.set(1, <CloudUploadIcon />)
+  icons.set(2, <FindInPageIcon />)
 
   return (
     <div
@@ -80,16 +79,14 @@ const ColorlibStepIcon = (props: { active: boolean; completed: boolean; icon: nu
   )
 }
 
-const getSteps = () => ['Login', 'Upload a knowledge source', 'Ask your knowledge source']
+const getSteps = () => ['Knowledge source', 'Query']
 
 const getStepContent = (step: number) => {
   switch (step) {
     case 0:
-      return 'Select campaign settings...'
+      return 'Upload a Knowledge source. Currently only PDFs are supported.'
     case 1:
-      return 'What is an ad group anyways?'
-    case 2:
-      return 'This is the bit I really care about!'
+      return 'Ask your document natural questions!'
     default:
       return 'Unknown step'
   }
@@ -97,6 +94,17 @@ const getStepContent = (step: number) => {
 interface Props extends WithStyles<typeof register> {}
 
 const CustomizedSteppers = (props: Props) => {
+  const history = useHistory()
+  useEffect(() => {
+    const getMe = async () => {
+      const resp = await fetch('/v1/me')
+      const me = await resp.json()
+
+      if (!me.ok) history.push('/login')
+    }
+    getMe().catch(() => history.push('/login'))
+  }, [history])
+
   const { classes } = props
 
   const [activeStep, setActiveStep] = useState(1)

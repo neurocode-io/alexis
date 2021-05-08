@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from 'express'
 
 import { createError } from '../lib/error'
-import { safeRouteHandler } from '../lib/express'
+import { auth, safeRouteHandler } from '../lib/express'
 import log from '../lib/log'
 import { errors } from './errors'
 import * as s from './service'
@@ -10,6 +10,7 @@ import { loginSchema, userSchema } from './types'
 const router = Router()
 
 const signup = async (req: Request, res: Response) => {
+  log.info(req.body)
   const user = await userSchema.parseAsync(req.body).catch((err) => createError(errors.validationError, err))
 
   await s.createUser(user)
@@ -26,6 +27,12 @@ const login = async (req: Request, res: Response) => {
   res.json({ result: 'ok' })
 }
 
+const me = async (req: Request, res: Response) => {
+  const me = await s.getUser(req.session.userId)
+
+  res.json(me)
+}
+
 const logout = (req: Request, res: Response) => {
   const { userId } = req.session
 
@@ -40,6 +47,7 @@ const logout = (req: Request, res: Response) => {
 
 router.post('/users', express.json(), safeRouteHandler(signup))
 router.post('/login', express.json(), safeRouteHandler(login))
+router.get('/me', auth, safeRouteHandler(me))
 router.get('/logout', logout)
 
 export default router

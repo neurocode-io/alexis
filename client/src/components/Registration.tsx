@@ -6,7 +6,6 @@ import InputAdornment from '@material-ui/core/InputAdornment'
 
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Paper from '@material-ui/core/Paper'
-import Avatar from '@material-ui/core/Avatar'
 import { FormControl, Input, InputLabel, Button } from '@material-ui/core'
 import Snackbar from '@material-ui/core/Snackbar'
 import SnackbarContent from '@material-ui/core/SnackbarContent'
@@ -15,12 +14,12 @@ import ErrorIcon from '@material-ui/icons/Error'
 import VisibilityTwoToneIcon from '@material-ui/icons/VisibilityTwoTone'
 import VisibilityOffTwoToneIcon from '@material-ui/icons/VisibilityOffTwoTone'
 import CloseIcon from '@material-ui/icons/Close'
-import avatar from './avatar.png'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 
 interface Props extends WithStyles<typeof register> {}
 
 const Registration = (props: Props) => {
+  const history = useHistory()
   const { classes } = props
   const [state, setState] = useState({
     email: '',
@@ -40,13 +39,32 @@ const Registration = (props: Props) => {
   const showPassword = () => setState((state) => ({ ...state, hidePassword: !state.hidePassword }))
 
   const isValid = () => (state.email === '' ? false : true)
-  const submitRegistration = (e: React.MouseEvent) => {
+
+  const submitRegistration = async (e: React.MouseEvent) => {
     e.preventDefault()
-    if (!passwordMatch()) {
-      setState({ ...state, errorOpen: true, error: 'Passwords do not match' })
-    }
-    console.log('register')
-    // send to backend
+    if (!passwordMatch()) return setState({ ...state, errorOpen: true, error: 'Passwords do not match' })
+
+    if (state.password.length < 5)
+      return setState({ ...state, errorOpen: true, error: 'Password needs to be at least 5 chars long' })
+
+    const body = JSON.stringify({
+      email: state.email,
+      firstName: state.firstName,
+      lastName: state.lastName,
+      password: state.password
+    })
+    const resp = await fetch(`/v1/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body
+    }).catch(() => ({ ok: false, statusText: 'Network problem. Please try again.', status: null }))
+
+    if (!resp.ok && !resp.status) return setState({ ...state, error: resp.statusText, errorOpen: true })
+    if (!resp.ok && resp.status) return setState({ ...state, error: 'Please check your input', errorOpen: true })
+
+    history.push('/login')
   }
 
   return (
@@ -180,7 +198,6 @@ const Registration = (props: Props) => {
 
         {state.error ? (
           <Snackbar
-            // variant=""
             key={state.error}
             anchorOrigin={{
               vertical: 'bottom',

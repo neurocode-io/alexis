@@ -14,11 +14,12 @@ import ErrorIcon from '@material-ui/icons/Error'
 import VisibilityTwoToneIcon from '@material-ui/icons/VisibilityTwoTone'
 import VisibilityOffTwoToneIcon from '@material-ui/icons/VisibilityOffTwoTone'
 import CloseIcon from '@material-ui/icons/Close'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 
 interface Props extends WithStyles<typeof register> {}
 
 const Login = (props: Props) => {
+  const history = useHistory()
   const { classes } = props
   const [state, setState] = useState({
     email: '',
@@ -34,10 +35,25 @@ const Login = (props: Props) => {
   const showPassword = () => setState((state) => ({ ...state, hidePassword: !state.hidePassword }))
 
   const isValid = () => (state.email === '' ? false : true)
-  const submitLogin = (e: React.MouseEvent) => {
+  const submitLogin = async (e: React.MouseEvent) => {
     e.preventDefault()
-    console.log('login')
-    // send to backend
+
+    const body = JSON.stringify({
+      email: state.email,
+      password: state.password
+    })
+    const resp = await fetch('/v1/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body
+    }).catch(() => ({ ok: false, statusText: 'Network problem. Please try again.', status: null }))
+
+    if (!resp.ok && !resp.status) return setState({ ...state, error: resp.statusText, errorOpen: true })
+    if (!resp.ok && resp.status) return setState({ ...state, error: 'Please check your input', errorOpen: true })
+
+    history.push('/app')
   }
 
   return (
@@ -101,7 +117,7 @@ const Login = (props: Props) => {
             type="submit"
             onClick={submitLogin}
           >
-            Join
+            Login
           </Button>
         </form>
 
@@ -110,7 +126,6 @@ const Login = (props: Props) => {
         </Link>
         {state.error ? (
           <Snackbar
-            // variant=""
             key={state.error}
             anchorOrigin={{
               vertical: 'bottom',
@@ -118,7 +133,7 @@ const Login = (props: Props) => {
             }}
             open={state.errorOpen}
             onClose={errorClose}
-            autoHideDuration={3000}
+            autoHideDuration={2000}
           >
             <SnackbarContent
               className={classes.error}
