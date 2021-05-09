@@ -10,7 +10,6 @@ import { loginSchema, userSchema } from './types'
 const router = Router()
 
 const signup = async (req: Request, res: Response) => {
-  log.info(req.body)
   const user = await userSchema.parseAsync(req.body).catch((err) => createError(errors.validationError, err))
 
   await s.createUser(user)

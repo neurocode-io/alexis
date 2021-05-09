@@ -6,8 +6,12 @@ const textLight = '#eaf2f4'
 const textDark = '#0D0D0D'
 const borderLight = 'rgba(206,212,218, .993)'
 
-export const register = (theme: Theme) =>
+export const main = (theme: Theme) =>
   createStyles({
+    dropzone: {
+      backgroundColor: 'transparent',
+      maxWidth: '600px'
+    },
     main: {
       marginTop: theme.spacing(8),
       marginBottom: theme.spacing(4),
@@ -15,7 +19,7 @@ export const register = (theme: Theme) =>
       marginLeft: theme.spacing(3),
       display: 'block',
       width: 'auto',
-      [theme.breakpoints.up(800)]: {
+      [theme.breakpoints.up(1200)]: {
         width: 1200,
         marginLeft: 'auto',
         marginRight: 'auto'

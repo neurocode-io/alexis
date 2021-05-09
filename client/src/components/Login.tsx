@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import { WithStyles } from '@material-ui/core'
-import { register } from './styles'
+import { main } from './styles'
 import InputAdornment from '@material-ui/core/InputAdornment'
 
 import CssBaseline from '@material-ui/core/CssBaseline'
@@ -16,7 +16,7 @@ import VisibilityOffTwoToneIcon from '@material-ui/icons/VisibilityOffTwoTone'
 import CloseIcon from '@material-ui/icons/Close'
 import { Link, useHistory } from 'react-router-dom'
 
-interface Props extends WithStyles<typeof register> {}
+interface Props extends WithStyles<typeof main> {}
 
 const Login = (props: Props) => {
   const history = useHistory()
@@ -121,7 +121,7 @@ const Login = (props: Props) => {
           </Button>
         </form>
 
-        <Link className={classes.isMember} to="/">
+        <Link className={classes.isMember} to="/register">
           Not a member yet?
         </Link>
         {state.error ? (
@@ -158,4 +158,4 @@ const Login = (props: Props) => {
   )
 }
 
-export default withStyles(register)(Login)
+export default withStyles(main)(Login)

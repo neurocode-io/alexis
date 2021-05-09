@@ -9,13 +9,13 @@ import { lookUp } from './search'
 const router = Router()
 
 const searchSchema = z.object({
-  question: z.string()
+  query: z.string()
 })
 
 const ask = async (req: Request, res: Response) => {
   const input = await searchSchema.parseAsync(req.body)
   const userId = req.session.userId
-  const resp = await lookUp(userId, input.question)
+  const resp = await lookUp(userId, input.query)
 
   log.debug(resp)
 
@@ -24,7 +24,7 @@ const ask = async (req: Request, res: Response) => {
       log.debug(content)
       log.debug('content finihsed')
 
-      return getAnswer(input.question, content)
+      return getAnswer(input.query, content)
     })
   )
 

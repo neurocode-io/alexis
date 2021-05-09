@@ -1,20 +1,20 @@
-import { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { makeStyles, withStyles } from '@material-ui/core/styles'
-import { Box, Grid, WithStyles } from '@material-ui/core'
+import { WithStyles, Button } from '@material-ui/core'
+import { DropzoneArea, FileObject, PreviewIconProps } from 'material-ui-dropzone'
 
 import clsx from 'clsx'
 import Stepper from '@material-ui/core/Stepper'
 import Step from '@material-ui/core/Step'
-import Paper from '@material-ui/core/Paper'
-import CssBaseline from '@material-ui/core/CssBaseline'
 import StepLabel from '@material-ui/core/StepLabel'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import FindInPageIcon from '@material-ui/icons/FindInPage'
+import PictureAsPdf from '@material-ui/icons/PictureAsPdf'
 import StepConnector from '@material-ui/core/StepConnector'
-import Button from '@material-ui/core/Button'
+
 import Typography from '@material-ui/core/Typography'
-import { register } from './styles'
-import { useHistory } from 'react-router'
+import { main } from './styles'
+import Query from './Query'
 
 const ColorlibConnector = withStyles({
   alternativeLabel: {
@@ -37,6 +37,15 @@ const ColorlibConnector = withStyles({
     borderRadius: 1
   }
 })(StepConnector)
+
+const handlePdfPreview = (fileObj: FileObject, classes: PreviewIconProps) => {
+  const iconProps = {
+    //@ts-ignore
+    className: classes.image
+  }
+
+  return <PictureAsPdf {...iconProps} />
+}
 
 const useColorlibStepIconStyles = makeStyles({
   root: {
@@ -86,31 +95,40 @@ const getStepContent = (step: number) => {
     case 0:
       return 'Upload a Knowledge source. Currently only PDFs are supported.'
     case 1:
-      return 'Ask your document natural questions!'
+      return 'Search your documents with natural questions!'
     default:
       return 'Unknown step'
   }
 }
-interface Props extends WithStyles<typeof register> {}
+const upload = (file: File) => {
+  const data = new FormData()
+  data.append('file-to-upload', file)
+
+  fetch('/knowledge-source/pdf', {
+    method: 'POST',
+    body: data
+  })
+    .then((response) => response.json())
+    .then((success) => console.log(success))
+    .catch((error) => console.log(error))
+}
+
+interface Props extends WithStyles<typeof main> {}
 
 const CustomizedSteppers = (props: Props) => {
-  const history = useHistory()
-  useEffect(() => {
-    const getMe = async () => {
-      const resp = await fetch('/v1/me')
-      const me = await resp.json()
-
-      if (!me.email) history.push('/login')
-    }
-    getMe().catch(() => history.push('/login'))
-  }, [history])
+  const [files, setFiles] = useState<File[]>()
 
   const { classes } = props
 
   const [activeStep, setActiveStep] = useState(0)
   const steps = getSteps()
 
-  const handleNext = () => {
+  const handleNext = async (activeStep: number) => {
+    if (activeStep === 0 && files && files.length > 0) {
+      console.log('upload')
+      await Promise.all(files.map((file: File) => upload(file)))
+    }
+
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
   }
 
@@ -123,49 +141,51 @@ const CustomizedSteppers = (props: Props) => {
   }
 
   return (
-    <div className={classes.main}>
-      <CssBaseline />
-      <Paper className={classes.paper}>
-        <Stepper
-          alternativeLabel
-          style={{ backgroundColor: 'transparent' }}
-          activeStep={activeStep}
-          connector={<ColorlibConnector />}
-        >
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-        {activeStep === steps.length ? (
-          <div>
-            <Typography className={classes.instructions}>All steps completed - you&apos;re finished</Typography>
-            <Button onClick={handleReset} className={classes.button}>
-              Reset
-            </Button>
-          </div>
+    <>
+      <Stepper
+        alternativeLabel
+        style={{ backgroundColor: 'transparent' }}
+        activeStep={activeStep}
+        connector={<ColorlibConnector />}
+      >
+        {steps.map((label) => (
+          <Step key={label}>
+            <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+      <div style={{ display: 'contents' }}>
+        <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
+        {activeStep === 0 ? (
+          <DropzoneArea
+            getPreviewIcon={handlePdfPreview}
+            acceptedFiles={['application/pdf']}
+            dropzoneText="Drag and your PDFs here or click"
+            filesLimit={5}
+            showFileNamesInPreview
+            maxFileSize={30 * 1e6}
+            dropzoneClass={classes.dropzone}
+            onChange={(files) => setFiles(files)}
+          />
         ) : (
-          <div style={{ display: 'contents' }}>
-            <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
-            <div>
-              <Button
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                className={classes.button}
-                style={{ marginRight: '20px' }}
-              >
-                Back
-              </Button>
-              <Button variant="contained" color="primary" onClick={handleNext} className={classes.button}>
-                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-              </Button>
-            </div>
-          </div>
+          <Query />
         )}
-      </Paper>
-    </div>
+        <div>
+          <Button
+            disabled={activeStep === 0}
+            onClick={handleBack}
+            className={classes.button}
+            style={{ marginRight: '20px' }}
+          >
+            Back
+          </Button>
+          <Button variant="contained" color="primary" onClick={() => handleNext(activeStep)} className={classes.button}>
+            {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
+          </Button>
+        </div>
+      </div>
+    </>
   )
 }
 
-export default withStyles(register)(CustomizedSteppers)
+export default withStyles(main)(CustomizedSteppers)

@@ -5,7 +5,7 @@ const userSchema = z.object({
   lastName: z.string(),
   email: z.string().email(),
   password: z.string().min(5),
-  pdfs: z.array(z.object({ id: z.string() })).optional()
+  pdfs: z.array(z.object({ id: z.string(), fileName: z.string() })).optional()
 })
 
 const loginSchema = z.object({
@@ -20,6 +20,6 @@ declare module 'express-session' {
   }
 }
 
-type CreateUserInput = z.infer<typeof userSchema>
+type User = z.infer<typeof userSchema>
 
-export { CreateUserInput, loginSchema, userSchema }
+export { User, loginSchema, userSchema }

@@ -2,9 +2,9 @@ import bcrypt from 'bcrypt'
 import * as uuid from 'uuid'
 
 import { createError } from '../lib/error'
-import r, { idx, key } from '../lib/redis'
+import r, { idx, key, userKey } from '../lib/redis'
 import { errors } from './errors'
-import { CreateUserInput } from './types'
+import { User } from './types'
 
 const handleError = (err: Error) => {
   if (err.message.toLowerCase().includes('index already exists')) return
@@ -31,23 +31,25 @@ const createIdx = async (userId: string) => {
     .catch(handleError)
 }
 
-const createUser = async (user: CreateUserInput) => {
-  if (await r.sismember(key('emails'), user.email)) createError(errors.emailConflictError)
+const createUser = async (newUser: User) => {
+  if (await r.sismember(key('emails'), newUser.email)) createError(errors.emailConflictError)
 
-  const password = user.password
+  const password = newUser.password
   const saltRounds = 8
   const userId = uuid.v4()
 
-  user.password = await bcrypt.hash(password, saltRounds)
+  newUser.password = await bcrypt.hash(password, saltRounds)
+  newUser.pdfs = [{ id: '', fileName: '' }]
 
   await createIdx(userId)
   await r
     .multi([
-      ['call', 'JSON.SET', key(userId), '.', JSON.stringify(user)],
-      ['sadd', key('emails'), user.email],
-      ['hmset', idx('email'), user.email, userId]
+      ['call', 'JSON.SET', userKey(userId), '.', JSON.stringify(newUser)],
+      ['sadd', key('emails'), newUser.email],
+      ['hmset', idx('email'), newUser.email, userId]
     ])
     .exec()
+    .catch(console.error)
 }
 
 const checkUser = async (email: string, password: string): Promise<string | never> => {
@@ -55,7 +57,7 @@ const checkUser = async (email: string, password: string): Promise<string | neve
 
   if (!userId) return createError(errors.validationError)
 
-  const userPassword = await r.send_command('JSON.GET', key(userId), '.password')
+  const userPassword = await r.send_command('JSON.GET', userKey(userId), '.password')
 
   if (!(await bcrypt.compare(password, userPassword))) createError(errors.validationError)
 
@@ -63,10 +65,10 @@ const checkUser = async (email: string, password: string): Promise<string | neve
 }
 
 const getUser = async (userId: string) => {
-  const user = await r.send_command('JSON.GET', key(userId))
-  const { password, ...payload } = user
+  const resp = (await r.send_command('JSON.GET', userKey(userId))) as User
+  const { password, ...payload } = resp
 
-  return payload as string
+  return payload
 }
 
 export { checkUser, createIdx, createUser, getUser }
