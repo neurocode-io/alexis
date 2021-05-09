@@ -14,7 +14,7 @@ const lookUp = async (userId: string, searchTerm: string) => {
     'WITHSCORES',
     'LIMIT',
     '0',
-    '3'
+    '4'
   )) as Array<string | string[]>
 
   return resp

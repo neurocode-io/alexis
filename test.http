@@ -31,7 +31,7 @@ POST {{api}}/v1/ask
 Content-Type: {{contentType}}
 
 {
-  "question": "what happens if a sprint has committed backlog?"
+  "question": "what happens If a backlog item is scheduled for release?"
 }
 
 ###
