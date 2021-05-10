@@ -27,9 +27,9 @@ const login = async (req: Request, res: Response) => {
 }
 
 const me = async (req: Request, res: Response) => {
-  const me = await s.getUser(req.session.userId)
+  const result = await s.getUser(req.session.userId)
 
-  res.json(me)
+  res.json({ result })
 }
 
 const logout = (req: Request, res: Response) => {

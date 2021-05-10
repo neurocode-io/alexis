@@ -2,7 +2,11 @@ import { useRef, useState } from 'react'
 import { useHistory } from 'react-router'
 import { makeStyles, withStyles } from '@material-ui/core/styles'
 import { WithStyles, Button } from '@material-ui/core'
-import { DropzoneArea, FileObject, PreviewIconProps } from 'material-ui-dropzone'
+import {
+  DropzoneArea,
+  FileObject,
+  PreviewIconProps,
+} from 'material-ui-dropzone'
 
 import clsx from 'clsx'
 import Stepper from '@material-ui/core/Stepper'
@@ -21,30 +25,26 @@ import Query from './Query'
 
 const ColorlibConnector = withStyles({
   alternativeLabel: {
-    top: 22
+    top: 22,
   },
   active: {
     '& $line': {
-      backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
-    }
-  },
-  completed: {
-    '& $line': {
-      backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
-    }
+      backgroundImage:
+        'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)',
+    },
   },
   line: {
     height: 3,
     border: 0,
     backgroundColor: '#eaeaf0',
-    borderRadius: 1
-  }
+    borderRadius: 1,
+  },
 })(StepConnector)
 
 const handlePdfPreview = (fileObj: FileObject, classes: PreviewIconProps) => {
   const iconProps = {
     //@ts-ignore
-    className: classes.image
+    className: classes.image,
   }
 
   return <PictureAsPdf {...iconProps} />
@@ -60,20 +60,18 @@ const useColorlibStepIconStyles = makeStyles({
     display: 'flex',
     borderRadius: '50%',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   active: {
-    backgroundImage: 'linear-gradient(180deg, rgba(169,198,217,1) 15%, rgba(242,167,75,1) 90%)',
-    boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)'
+    backgroundImage:
+      'linear-gradient(180deg, rgba(169,198,217,1) 15%, rgba(242,167,75,1) 90%)',
+    boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
   },
-  completed: {
-    backgroundImage: 'linear-gradient(180deg, rgba(169,198,217,1) 15%, rgba(242,167,75,1) 90%)'
-  }
 })
 
-const ColorlibStepIcon = (props: { active: boolean; completed: boolean; icon: number }) => {
+const ColorlibStepIcon = (props: { active: boolean; icon: number }) => {
   const classes = useColorlibStepIconStyles()
-  const { active, completed, icon } = props
+  const { active, icon } = props
 
   const icons = new Map<number, JSX.Element>()
   icons.set(1, <CloudUploadIcon />)
@@ -83,7 +81,6 @@ const ColorlibStepIcon = (props: { active: boolean; completed: boolean; icon: nu
     <div
       className={clsx(classes.root, {
         [classes.active]: active,
-        [classes.completed]: completed
       })}
     >
       {icons.get(icon)}
@@ -109,7 +106,7 @@ const upload = (file: File) => {
 
   fetch('/knowledge-source/pdf', {
     method: 'POST',
-    body: data
+    body: data,
   })
     .then((response) => response.json())
     .then((success) => console.log(success))
@@ -126,8 +123,14 @@ const CustomizedSteppers = (props: Props) => {
   const [uploading, setUploading] = useState(false)
   const [activeStep, setActiveStep] = useState(0)
   const submitRef = useRef({
-    getState: () => ({ isRunning: false, error: '', errorOpen: false, query: '', result: '' }),
-    setState: (state: any) => Promise.resolve(state)
+    getState: () => ({
+      isRunning: false,
+      error: '',
+      errorOpen: false,
+      query: '',
+      result: '',
+    }),
+    setState: (state: any) => Promise.resolve(state),
   })
 
   const { classes } = props
@@ -137,27 +140,45 @@ const CustomizedSteppers = (props: Props) => {
   const submitQuery = async (e: any) => {
     e.preventDefault()
     submitRef.current.setState({ isRunning: true })
+
+    if (submitRef.current.getState().query.length <= 2) {
+      return submitRef.current.setState({
+        error: 'Query seems to be invalid',
+        errorOpen: true,
+        isRunning: false,
+      })
+    }
+
     console.log('submit')
     const body = JSON.stringify({
-      query: submitRef.current.getState().query
+      query: submitRef.current.getState().query,
     })
 
     const resp = await fetch('/v1/ask', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body
-    }).catch(() => ({ ok: false, statusText: 'Network problem. Please try again.', status: null, json: () => '' }))
+      body,
+    }).catch(() => ({
+      ok: false,
+      statusText: 'Network problem. Please try again.',
+      status: null,
+      json: () => '',
+    }))
 
     if (!resp.ok && !resp.status)
-      return submitRef.current.setState({ error: resp.statusText, errorOpen: true, isRunning: false })
+      return submitRef.current.setState({
+        error: resp.statusText,
+        errorOpen: true,
+        isRunning: false,
+      })
     if (!resp.ok && resp.status === 401) history.push('/')
     if (!resp.ok && resp.status !== 401) {
       return submitRef.current.setState({
         error: 'Something went wrong. Please try again.',
         errorOpen: true,
-        isRunning: false
+        isRunning: false,
       })
     }
 
@@ -200,7 +221,9 @@ const CustomizedSteppers = (props: Props) => {
         ))}
       </Stepper>
       <div style={{ display: 'contents' }}>
-        <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
+        <Typography className={classes.instructions}>
+          {getStepContent(activeStep)}
+        </Typography>
         {activeStep === 0 ? (
           <DropzoneArea
             getPreviewIcon={handlePdfPreview}
@@ -234,12 +257,21 @@ const CustomizedSteppers = (props: Props) => {
               Next
             </Button>
           ) : (
-            <Button variant="contained" color="primary" onClick={(e) => submitQuery(e)} className={classes.button}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={(e) => submitQuery(e)}
+              className={classes.button}
+            >
               Submit
             </Button>
           )}
 
-          <Backdrop className={classes.backdrop} open={uploading} onClick={handleFinish}>
+          <Backdrop
+            className={classes.backdrop}
+            open={uploading}
+            onClick={handleFinish}
+          >
             <CircularProgress color="inherit" />
           </Backdrop>
         </div>

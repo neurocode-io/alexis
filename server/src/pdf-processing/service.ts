@@ -1,5 +1,6 @@
 import { serverConfig } from '../config'
 import { getId } from '../lib/pdf'
+import * as path from 'path'
 import r, { stream, userKey } from '../lib/redis'
 
 const startProcessing = async (fileName: string, userId: string) => {
@@ -12,7 +13,13 @@ const startProcessing = async (fileName: string, userId: string) => {
   await r
     .multi([
       ['xadd', stream(streamName), '*', 'fileName', fileName, 'userId', userId],
-      ['call', 'JSON.ARRAPPEND', userKey(userId), '.pdfs', JSON.stringify({ id: pdfId, fileName })]
+      [
+        'call',
+        'JSON.ARRAPPEND',
+        userKey(userId),
+        '.pdfs',
+        JSON.stringify({ id: pdfId, fileName: path.basename(fileName) })
+      ]
     ])
     .exec()
 }

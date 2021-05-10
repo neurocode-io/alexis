@@ -10,7 +10,7 @@ export const main = (theme: Theme) =>
   createStyles({
     dropzone: {
       backgroundColor: 'transparent',
-      maxWidth: '600px'
+      maxWidth: '600px',
     },
     main: {
       marginTop: theme.spacing(8),
@@ -22,26 +22,34 @@ export const main = (theme: Theme) =>
       [theme.breakpoints.up(1200)]: {
         width: 1200,
         marginLeft: 'auto',
-        marginRight: 'auto'
-      }
+        marginRight: 'auto',
+      },
+    },
+    me: {
+      display: 'flex',
+      justifyContent: 'right',
+      textAlign: 'right',
     },
     instructions: {
       marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1)
+      marginBottom: theme.spacing(1),
     },
     paper: {
-      position: 'relative',
       marginTop: theme.spacing(2),
       padding: `${theme.spacing(2)}px ${theme.spacing(1)}px`,
+      background:
+        'linear-gradient(180deg, rgba(169,198,217,1) 15%, rgba(242,167,75,1) 90%)',
+      boxShadow: '.2px 12px 18px rgba(131,153,167,0.6)',
+    },
+    paperContainer: {
+      position: 'relative',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      background: 'linear-gradient(180deg, rgba(169,198,217,1) 15%, rgba(242,167,75,1) 90%)',
-      boxShadow: '.2px 12px 18px rgba(131,153,167,0.6)'
     },
     backdrop: {
       zIndex: theme.zIndex.drawer + 1,
-      color: '#fff'
+      color: '#fff',
     },
     avatar: {
       marginTop: 20,
@@ -49,18 +57,18 @@ export const main = (theme: Theme) =>
       background: 'rgba(255,255,255,0.85)',
       width: '100px',
       height: '100px',
-      boxShadow: '0px 0px 12px rgba(131,153,167,0.99)'
+      boxShadow: '0px 0px 12px rgba(131,153,167,0.99)',
     },
 
     icon: {
       width: '80px',
       height: '80px',
-      color: 'rgba(131,153,167,0.79)'
+      color: 'rgba(131,153,167,0.79)',
     },
 
     form: {
       margin: theme.spacing(4),
-      maxWidth: 400
+      maxWidth: 400,
     },
     labels: {
       padding: `${theme.spacing(1)}px ${theme.spacing(4)}px`,
@@ -69,7 +77,7 @@ export const main = (theme: Theme) =>
       fontFamily: 'PT Mono, monospace',
       fontWeight: 300,
       opacity: 0.45,
-      color: `${textDark} !important`
+      color: `${textDark} !important`,
     },
 
     inputs: {
@@ -86,8 +94,8 @@ export const main = (theme: Theme) =>
       borderColor: borderLight,
 
       '&:hover': {
-        background: 'rgba(169,198,217,0.36457423) '
-      }
+        background: 'rgba(169,198,217,0.36457423) ',
+      },
     },
 
     button: {
@@ -112,36 +120,36 @@ export const main = (theme: Theme) =>
         bottom: 0,
         left: 0,
         right: 0,
-        opacity: 1
+        opacity: 1,
       },
       '&::before': {
         borderBottom: '2px solid rgba(255,255,255,.58)',
         borderTop: '2px solid rgba(255,255,255,.58)',
-        transform: 'scale(0,1)'
+        transform: 'scale(0,1)',
       },
       '&::after': {
         borderLeft: '3px solid rgba(255,255,255,.58)',
         borderRight: '3px solid rgba(255,255,255,.58)',
-        transform: 'scale(1,0)'
+        transform: 'scale(1,0)',
       },
       '&:hover::before': {
         transform: 'scale(1,1)',
-        transition: 'transform cubic-bezier(0.85,.36,.8,.42) 0.3s'
+        transition: 'transform cubic-bezier(0.85,.36,.8,.42) 0.3s',
       },
       '&:hover::after': {
         transform: 'scale(1,1)',
-        transition: 'transform cubic-bezier(0.85,.36,.8,.42) .2s'
+        transition: 'transform cubic-bezier(0.85,.36,.8,.42) .2s',
       },
       '&::first-letter': {
-        color: orange
+        color: orange,
       },
       '&:hover': {
         background: 'rgba(169,198,217,0.8)',
-        color: textLight
-      }
+        color: textLight,
+      },
     },
     results: {
-      maxWidth: '600px'
+      maxWidth: '600px',
     },
     error: {
       border: `1.2px solid ${red[900]}`,
@@ -152,16 +160,16 @@ export const main = (theme: Theme) =>
       fontFamily: 'Raleway, sans-serif',
       display: 'flex',
       alignItems: 'center',
-      paddingBottom: theme.spacing(3)
+      paddingBottom: theme.spacing(3),
     },
 
     passwordEye: {
       color: 'rgba(131,153,167,0.9)',
-      opacity: 0.7
+      opacity: 0.7,
     },
 
     isMember: {
       marginTop: '10px',
-      color: textDark
-    }
+      color: textDark,
+    },
   })

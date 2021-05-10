@@ -27,13 +27,27 @@ const ask = async (req: Request, res: Response) => {
   const result = await Promise.all(
     resp.map(({ content }) => {
       log.debug(content)
-      log.debug('content finihsed')
+      log.debug('content finished')
 
       return getAnswer(input.query, content)
     })
   )
 
-  res.status(200).json({ result })
+  const cleaned = result
+    .sort((a, b) => {
+      if (!a.answer) return 1
+      if (!b.answer) return -1
+
+      return b.score - a.score
+    })
+    .filter((r) => r.answer.length > 0)
+
+  if (cleaned.length === 0) {
+    res.json({ result: [{ score: 100, answer: '' }] })
+    return
+  }
+
+  res.status(200).json({ result: cleaned })
 }
 
 router.post('/ask', auth, express.json(), safeRouteHandler(ask))

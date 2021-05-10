@@ -1,5 +1,11 @@
 import { withStyles } from '@material-ui/core/styles'
-import { WithStyles, FormControl, Input, InputLabel, Container } from '@material-ui/core'
+import {
+  WithStyles,
+  FormControl,
+  Input,
+  InputLabel,
+  Container,
+} from '@material-ui/core'
 import Backdrop from '@material-ui/core/Backdrop'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Snackbar from '@material-ui/core/Snackbar'
@@ -33,7 +39,7 @@ const Query = forwardRef((props: Props, ref) => {
 
   useImperativeHandle(ref, () => ({
     getState: () => state,
-    setState: (newState: State) => setState({ ...state, ...newState })
+    setState: (newState: State) => setState({ ...state, ...newState }),
   }))
 
   return (
@@ -56,16 +62,18 @@ const Query = forwardRef((props: Props, ref) => {
 
       <Container maxWidth="xs">
         <h3 hidden={state.result === undefined}>Results</h3>
-        {state.result
-          ?.sort((a, b) => b.score - a.score)
-          .map(({ score, answer }) => (
-            <p key={score}>
-              Score: {score} <br />
-              Answer: {answer}
-            </p>
-          ))}
+        {state.result?.map(({ score, answer }) => (
+          <p key={score}>
+            Score: {score} <br />
+            Answer: {answer}
+          </p>
+        ))}
       </Container>
-      <Backdrop className={classes.backdrop} open={state.isRunning} onClick={handleFinish}>
+      <Backdrop
+        className={classes.backdrop}
+        open={state.isRunning}
+        onClick={handleFinish}
+      >
         <CircularProgress color="inherit" />
       </Backdrop>
       {state.error ? (
@@ -73,7 +81,7 @@ const Query = forwardRef((props: Props, ref) => {
           key={state.error}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'center'
+            horizontal: 'center',
           }}
           open={state.errorOpen}
           onClose={errorClose}
@@ -92,7 +100,7 @@ const Query = forwardRef((props: Props, ref) => {
             action={[
               <IconButton key="close" aria-label="close" onClick={errorClose}>
                 <CloseIcon color="error" />
-              </IconButton>
+              </IconButton>,
             ]}
           />
         </Snackbar>
