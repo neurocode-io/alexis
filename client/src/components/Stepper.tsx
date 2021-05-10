@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useHistory } from 'react-router'
 import { makeStyles, withStyles } from '@material-ui/core/styles'
 import { WithStyles, Button } from '@material-ui/core'
 import { DropzoneArea, FileObject, PreviewIconProps } from 'material-ui-dropzone'
@@ -116,16 +117,55 @@ const upload = (file: File) => {
 }
 
 interface Props extends WithStyles<typeof main> {}
+type Answers = { answer: string; score: number }[]
+type AnswerResp = { result: Answers }
 
 const CustomizedSteppers = (props: Props) => {
+  const history = useHistory()
   const [files, setFiles] = useState<File[]>()
   const [uploading, setUploading] = useState(false)
   const [activeStep, setActiveStep] = useState(0)
-  const submitRef = useRef({ submitQuery: (e: any) => Promise.resolve() })
+  const submitRef = useRef({
+    getState: () => ({ isRunning: false, error: '', errorOpen: false, query: '', result: '' }),
+    setState: (state: any) => Promise.resolve(state)
+  })
 
   const { classes } = props
 
   const steps = getSteps()
+
+  const submitQuery = async (e: any) => {
+    e.preventDefault()
+    submitRef.current.setState({ isRunning: true })
+    console.log('submit')
+    const body = JSON.stringify({
+      query: submitRef.current.getState().query
+    })
+
+    const resp = await fetch('/v1/ask', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body
+    }).catch(() => ({ ok: false, statusText: 'Network problem. Please try again.', status: null, json: () => '' }))
+
+    if (!resp.ok && !resp.status)
+      return submitRef.current.setState({ error: resp.statusText, errorOpen: true, isRunning: false })
+    if (!resp.ok && resp.status === 401) history.push('/')
+    if (!resp.ok && resp.status !== 401) {
+      return submitRef.current.setState({
+        error: 'Something went wrong. Please try again.',
+        errorOpen: true,
+        isRunning: false
+      })
+    }
+
+    const { result } = (await resp.json()) as AnswerResp
+
+    console.log(result)
+    submitRef.current.setState({ result, isRunning: false })
+  }
 
   const handleNext = async (activeStep: number) => {
     if (activeStep === 0 && files && files.length > 0) {
@@ -143,10 +183,6 @@ const CustomizedSteppers = (props: Props) => {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1)
-  }
-
-  const noop = async (e: any) => {
-    setActiveStep(0)
   }
 
   return (
@@ -177,7 +213,7 @@ const CustomizedSteppers = (props: Props) => {
             onChange={(files) => setFiles(files)}
           />
         ) : (
-          <Query ref={submitRef} />
+          <Query submitQuery={submitQuery} ref={submitRef} />
         )}
         <div>
           <Button
@@ -198,12 +234,7 @@ const CustomizedSteppers = (props: Props) => {
               Next
             </Button>
           ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={(e) => submitRef?.current?.submitQuery(e)}
-              className={classes.button}
-            >
+            <Button variant="contained" color="primary" onClick={(e) => submitQuery(e)} className={classes.button}>
               Submit
             </Button>
           )}

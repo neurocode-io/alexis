@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from 'express'
 import * as z from 'zod'
 
-import { safeRouteHandler } from '../lib/express'
+import { auth, safeRouteHandler } from '../lib/express'
 import log from '../lib/log'
 import { getAnswer } from './qa'
 import { lookUp } from './search'
@@ -36,6 +36,6 @@ const ask = async (req: Request, res: Response) => {
   res.status(200).json({ result })
 }
 
-router.post('/ask', express.json(), safeRouteHandler(ask))
+router.post('/ask', auth, express.json(), safeRouteHandler(ask))
 
 export default router

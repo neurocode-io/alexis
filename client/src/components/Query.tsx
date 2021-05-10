@@ -1,5 +1,5 @@
 import { withStyles } from '@material-ui/core/styles'
-import { WithStyles, FormControl, Input, InputLabel } from '@material-ui/core'
+import { WithStyles, FormControl, Input, InputLabel, Container } from '@material-ui/core'
 import Backdrop from '@material-ui/core/Backdrop'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Snackbar from '@material-ui/core/Snackbar'
@@ -10,10 +10,11 @@ import ErrorIcon from '@material-ui/icons/Error'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 
-interface Props extends WithStyles<typeof main> {}
+interface Props extends WithStyles<typeof main> {
+  submitQuery: (e: any) => Promise<void>
+}
 
 type Answers = { answer: string; score: number }[]
-type AnswerResp = { result: Answers }
 
 type State = {
   isRunning: boolean
@@ -24,45 +25,16 @@ type State = {
 }
 
 const Query = forwardRef((props: Props, ref) => {
-  useImperativeHandle(ref, () => ({
-    submitQuery
-  }))
-
   const [state, setState] = useState<State>({ isRunning: false })
-  const { classes } = props
+  const { classes, submitQuery } = props
 
   const handleFinish = () => setState({ ...state, isRunning: false })
-  const handleStart = () => setState({ ...state, isRunning: true })
   const errorClose = () => setState({ ...state, errorOpen: false })
 
-  const submitQuery = async (e: any) => {
-    e.preventDefault()
-    handleStart()
-    console.log('submit')
-    const body = JSON.stringify({
-      query: state.query
-    })
-
-    const resp = await fetch('/v1/ask', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body
-    }).catch(() => ({ ok: false, statusText: 'Network problem. Please try again.', status: null, json: () => '' }))
-
-    if (!resp.ok && !resp.status) return setState({ ...state, error: resp.statusText, errorOpen: true })
-    if (!resp.ok && resp.status)
-      return setState({ ...state, error: 'Something went wrong. Please try again.', errorOpen: true })
-
-    const { result } = (await resp.json()) as AnswerResp
-
-    console.log(result)
-    setState({ ...state, result })
-    console.log(state)
-    handleFinish()
-    console.log(state)
-  }
+  useImperativeHandle(ref, () => ({
+    getState: () => state,
+    setState: (newState: State) => setState({ ...state, ...newState })
+  }))
 
   return (
     <>
@@ -82,7 +54,7 @@ const Query = forwardRef((props: Props, ref) => {
         </FormControl>
       </form>
 
-      <div className={classes.results}>
+      <Container maxWidth="xs">
         <h3 hidden={state.result === undefined}>Results</h3>
         {state.result
           ?.sort((a, b) => b.score - a.score)
@@ -92,7 +64,7 @@ const Query = forwardRef((props: Props, ref) => {
               Answer: {answer}
             </p>
           ))}
-      </div>
+      </Container>
       <Backdrop className={classes.backdrop} open={state.isRunning} onClick={handleFinish}>
         <CircularProgress color="inherit" />
       </Backdrop>
