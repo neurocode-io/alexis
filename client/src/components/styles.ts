@@ -39,6 +39,10 @@ export const main = (theme: Theme) =>
       background: 'linear-gradient(180deg, rgba(169,198,217,1) 15%, rgba(242,167,75,1) 90%)',
       boxShadow: '.2px 12px 18px rgba(131,153,167,0.6)'
     },
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 1,
+      color: '#fff'
+    },
     avatar: {
       marginTop: 20,
       position: 'relative',
@@ -135,6 +139,9 @@ export const main = (theme: Theme) =>
         background: 'rgba(169,198,217,0.8)',
         color: textLight
       }
+    },
+    results: {
+      maxWidth: '600px'
     },
     error: {
       border: `1.2px solid ${red[900]}`,

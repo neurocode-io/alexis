@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useRef, useState } from 'react'
 import { makeStyles, withStyles } from '@material-ui/core/styles'
 import { WithStyles, Button } from '@material-ui/core'
 import { DropzoneArea, FileObject, PreviewIconProps } from 'material-ui-dropzone'
@@ -11,6 +11,8 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import FindInPageIcon from '@material-ui/icons/FindInPage'
 import PictureAsPdf from '@material-ui/icons/PictureAsPdf'
 import StepConnector from '@material-ui/core/StepConnector'
+import Backdrop from '@material-ui/core/Backdrop'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import Typography from '@material-ui/core/Typography'
 import { main } from './styles'
@@ -117,26 +119,33 @@ interface Props extends WithStyles<typeof main> {}
 
 const CustomizedSteppers = (props: Props) => {
   const [files, setFiles] = useState<File[]>()
+  const [uploading, setUploading] = useState(false)
+  const [activeStep, setActiveStep] = useState(0)
+  const submitRef = useRef({ submitQuery: (e: any) => Promise.resolve() })
 
   const { classes } = props
 
-  const [activeStep, setActiveStep] = useState(0)
   const steps = getSteps()
 
   const handleNext = async (activeStep: number) => {
     if (activeStep === 0 && files && files.length > 0) {
       console.log('upload')
+      handleStart()
       await Promise.all(files.map((file: File) => upload(file)))
+      handleFinish()
     }
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1)
   }
 
+  const handleFinish = () => setUploading(false)
+  const handleStart = () => setUploading(!uploading)
+
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1)
   }
 
-  const handleReset = () => {
+  const noop = async (e: any) => {
     setActiveStep(0)
   }
 
@@ -163,12 +172,12 @@ const CustomizedSteppers = (props: Props) => {
             dropzoneText="Drag and your PDFs here or click"
             filesLimit={5}
             showFileNamesInPreview
-            maxFileSize={30 * 1e6}
+            maxFileSize={50 * 1e6}
             dropzoneClass={classes.dropzone}
             onChange={(files) => setFiles(files)}
           />
         ) : (
-          <Query />
+          <Query ref={submitRef} />
         )}
         <div>
           <Button
@@ -179,9 +188,29 @@ const CustomizedSteppers = (props: Props) => {
           >
             Back
           </Button>
-          <Button variant="contained" color="primary" onClick={() => handleNext(activeStep)} className={classes.button}>
-            {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
-          </Button>
+          {activeStep === 0 ? (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleNext(activeStep)}
+              className={classes.button}
+            >
+              Next
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={(e) => submitRef?.current?.submitQuery(e)}
+              className={classes.button}
+            >
+              Submit
+            </Button>
+          )}
+
+          <Backdrop className={classes.backdrop} open={uploading} onClick={handleFinish}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </div>
     </>

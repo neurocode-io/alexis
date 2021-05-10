@@ -17,6 +17,11 @@ const ask = async (req: Request, res: Response) => {
   const userId = req.session.userId
   const resp = await lookUp(userId, input.query)
 
+  if (resp.length === 0) {
+    res.json({ result: [{ score: 100, answer: '' }] })
+    return
+  }
+
   log.debug(resp)
 
   const result = await Promise.all(
@@ -28,7 +33,7 @@ const ask = async (req: Request, res: Response) => {
     })
   )
 
-  res.status(200).json(result)
+  res.status(200).json({ result })
 }
 
 router.post('/ask', express.json(), safeRouteHandler(ask))
