@@ -2,12 +2,12 @@
 
 ### Dev
 
-1. npm install 
-2. npm start
+1. npm install
+2. npm run boostrap 
+3. npm start
 
 
 Redis Insight: http://localhost:8001
-
 Web Server: http://localhost:3000
 
 ### Test
