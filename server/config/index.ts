@@ -22,7 +22,7 @@ const redisConfig = {
 const serverConfig = {
   port: env
     .get('SERVER_PORT')
-    .default(3000)
+    .default(5000)
     .asPortNumber(),
   logLevel: env
     .get('SERVER_LOG_LEVEL')
