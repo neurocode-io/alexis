@@ -29,7 +29,7 @@ const getAnswer = async (question: string, context: string) => {
     const endIdx = argMax(ansEnd)
 
     const score = (startProbs[startIdx] ?? 0) * (endProbs[endIdx] ?? 0)
-    const answer = await decode(encoded.ids, startIdx, endIdx + 1)
+    const answer = await decode(input.ids, startIdx, endIdx + 1)
 
     answers.push({ answer, score })
   }
