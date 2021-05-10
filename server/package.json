@@ -9,13 +9,13 @@
     "repl": "dotenv -e src/dev.env node",
     "server": "dotenv -e src/dev.env -- tsnd --respawn src/index.ts",
     "pdfProcessor": "dotenv -e src/dev.env -- tsnd --respawn src/pdf-processing/worker.ts",
-    "redis": "docker-compose up",
+    "redis": "docker-compose -f ../docker-compose.yaml up",
     "start": "run-p redis server pdfProcessor",
     "lint": "eslint \"./**/*.ts\" --fix",
-    "pretest": "docker-compose up -d redis",
+    "pretest": "docker-compose -f ../docker-compose.yaml up -d redis",
     "test": "dotenv -e src/dev.env -- jest ; docker-compose down",
     "pretest:watch": "npm run pretest",
-    "test:watch": "dotenv -e src/dev.env -- jest --watch ; docker-compose down",
+    "test:watch": "dotenv -e src/dev.env -- jest --watch ; docker-compose -f ../docker-compose.yaml down",
     "pretest:cov": "npm run pretest",
     "test:cov": "dotenv -e src/dev.env -- jest --coverage",
     "postinstall": "env-linter -s -d -l -vs 'node=12.x.x,npm=6.x.x'"
@@ -68,12 +68,12 @@
   },
   "jest": {
     "roots": [
-      "server/"
+      "src/"
     ],
     "collectCoverage": true,
     "collectCoverageFrom": [
       "./**/*.ts",
-      "!server/index.ts"
+      "!src/index.ts"
     ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
