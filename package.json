@@ -4,8 +4,8 @@
   "description": "alexis for now",
   "main": "dist/index.js",
   "scripts": {
-    "boostrap": "cd client && npm install",
-    "postboostrap": "cd server && npm install",
+    "bootstrap": "cd client && npm install",
+    "postbootstrap": "cd server && npm install",
     "client": "cd client && npm run start",
     "server": "cd server && npm run start",
     "start": "run-p server client",

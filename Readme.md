@@ -3,7 +3,7 @@
 ### Dev
 
 1. npm install
-2. npm run boostrap 
+2. npm run bootstrap 
 3. npm start
 
 
