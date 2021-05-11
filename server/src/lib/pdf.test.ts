@@ -5,7 +5,7 @@ import { getText } from './pdf'
 describe('pdf', () => {
   describe('getText', () => {
     it('should extract text from PDF', async () => {
-      const pdfContent = fs.readFileSync('./test-files/EffectiveAggregateDesign.pdf')
+      const pdfContent = fs.readFileSync('./test-files/Effective-Aggregate-Design.pdf')
 
       for await (const obj of getText(pdfContent)) {
         expect(obj).toHaveProperty('page')
