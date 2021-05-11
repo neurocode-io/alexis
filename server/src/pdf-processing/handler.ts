@@ -11,7 +11,7 @@ const uploadPdf = async (req: Request, res: Response) => {
 
   await startProcessing(`${serverConfig.uploadDestionation}${req.file.filename}`, userId)
 
-  res.redirect('/')
+  res.json({ result: 'ok' })
 }
 
 router.post(

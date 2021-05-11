@@ -33,6 +33,7 @@ Redis.Command.setReplyTransformer('JSON.GET', (result: string) => {
 export const key = (id: string) => `${redisConfig.namespace}:${id}`
 export const idx = (id: string) => key(`idx:${id}`)
 export const stream = (id: string) => key(`stream:${id}`)
+export const userKey = (id: string) => key(`user:${id}`)
 export const newClient = () => new Redis(redisConfig)
 
 export default redis

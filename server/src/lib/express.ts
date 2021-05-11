@@ -13,7 +13,7 @@ const uploadHandler = (destination: string, maxSize?: number) => {
   const upload = multer({
     storage,
     limits: {
-      fileSize: maxSize ?? 30 * 1e6 // 30MB
+      fileSize: maxSize ?? 50 * 1e6 // 50MB
     }
   })
 

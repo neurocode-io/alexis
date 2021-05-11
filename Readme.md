@@ -2,8 +2,9 @@
 
 ### Dev
 
-1. npm install 
-2. npm start
+1. npm install
+2. npm run bootstrap 
+3. npm start
 
 
 Redis Insight: http://localhost:8001
