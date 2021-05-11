@@ -50,7 +50,7 @@ const storePdf = async (fileName: string, userId: string) => {
     contentArray.unshift(remainder)
     remainder = contentArray.pop() ?? ''
 
-    getParagraphs(contentArray).map(content => {
+    getParagraphs(contentArray).map((content) => {
       log.debug('content: ' + content)
       const keyId = key(`pdfs:${userId}.${++count}`)
 
@@ -65,7 +65,7 @@ const storePdf = async (fileName: string, userId: string) => {
   const keyId = key(`pdfs:${userId}.${++count}`)
 
   transaction.hset(keyId, { content: lastParagraph, fileName })
-  
+
   await transaction.set(pdfIdx, ++pdfCount).exec()
 }
 

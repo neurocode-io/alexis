@@ -22,4 +22,4 @@ declare module 'express-session' {
 
 type User = z.infer<typeof userSchema>
 
-export { User, loginSchema, userSchema }
+export { loginSchema, User, userSchema }

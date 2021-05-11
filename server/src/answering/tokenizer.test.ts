@@ -14,7 +14,7 @@ describe('answering/tokenizer', () => {
     const encoded = await t.encode('What is your name?', 'My name is Jack'.repeat(350))
 
     expect(encoded.length).toEqual(512)
-    expect(encoded.overflowing.length).toEqual(2)
+    expect(encoded.overflowing.length).toEqual(3)
   })
 
   it('should decode', async () => {

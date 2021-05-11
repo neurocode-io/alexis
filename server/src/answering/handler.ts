@@ -19,6 +19,7 @@ const ask = async (req: Request, res: Response) => {
 
   if (resp.length === 0) {
     res.json({ result: [{ score: 100, answer: '' }] })
+
     return
   }
 
@@ -44,6 +45,7 @@ const ask = async (req: Request, res: Response) => {
 
   if (cleaned.length === 0) {
     res.json({ result: [{ score: 100, answer: '' }] })
+
     return
   }
 

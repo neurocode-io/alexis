@@ -1,6 +1,7 @@
+import * as path from 'path'
+
 import { serverConfig } from '../config'
 import { getId } from '../lib/pdf'
-import * as path from 'path'
 import r, { stream, userKey } from '../lib/redis'
 
 const startProcessing = async (fileName: string, userId: string) => {
