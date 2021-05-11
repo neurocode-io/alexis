@@ -1,8 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 
-import { numberBetween } from '../lib/math'
-import r, { key } from '../lib/redis'
+import r from '../lib/redis'
 
 type AiInfoOutput = {
   [key: string]: string | number
@@ -23,33 +22,57 @@ const runInference = async (
   encodedIds: number[],
   attentionMask: number[]
 ): Promise<{ ansStart: number[]; ansEnd: number[] }> => {
-  const inputKey = key(`enc_input_ids`) + `${numberBetween(0, 10000)}`
-  const attentionMaskKey = key(`enc_attention_mask`) + `${numberBetween(0, 10000)}`
-  const outputStartScore = key(`answer_start_score`) + `${numberBetween(0, 10000)}`
-  const outputEndScore = key(`answer_end_score`) + `${numberBetween(0, 10000)}`
+  const key = {
+    inputId: 'enc_input_ids',
+    attentionMask: 'enc_attention_mask',
+    outputStart: 'answer_start_score',
+    outputEnd: 'answer_end_score'
+  }
 
-  await Promise.all([
-    r.send_command('AI.TENSORSET', inputKey, 'int64', 1, 512, 'VALUES', encodedIds),
-    r.send_command('AI.TENSORSET', attentionMaskKey, 'int64', 1, 512, 'VALUES', attentionMask)
-  ])
+  const model = {
+    numberType: 'int64',
+    xDim: 1,
+    yDim: 512
+  }
 
-  await r.send_command(
+  const [_1, _2, _3, ansStart, ansEnd] = await r.send_command(
+    'AI.DAGRUN',
+    'TIMEOUT',
+    '3000',
+    '|>',
+    'AI.TENSORSET',
+    key.inputId,
+    model.numberType,
+    model.xDim,
+    model.yDim,
+    'VALUES',
+    encodedIds,
+    '|>',
+    'AI.TENSORSET',
+    key.attentionMask,
+    model.numberType,
+    model.xDim,
+    model.yDim,
+    'VALUES',
+    attentionMask,
+    '|>',
     'AI.MODELRUN',
     MODEL_NAME,
-    'TIMEOUT',
-    3000,
     'INPUTS',
-    inputKey,
-    attentionMaskKey,
+    key.inputId,
+    key.attentionMask,
     'OUTPUTS',
-    outputStartScore,
-    outputEndScore
+    key.outputStart,
+    key.outputEnd,
+    '|>',
+    'AI.TENSORGET',
+    key.outputStart,
+    'VALUES',
+    '|>',
+    'AI.TENSORGET',
+    key.outputEnd,
+    'VALUES'
   )
-
-  const [ansStart, ansEnd] = await Promise.all([
-    r.send_command('AI.TENSORGET', outputStartScore, 'VALUES'),
-    r.send_command('AI.TENSORGET', outputEndScore, 'VALUES')
-  ])
 
   return {
     ansStart,
