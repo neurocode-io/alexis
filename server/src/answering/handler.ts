@@ -35,13 +35,15 @@ const ask = async (req: Request, res: Response) => {
   )
 
   const cleaned = result
+    .filter((r) => r.answer.length > 0)
     .sort((a, b) => {
       if (!a.answer) return 1
       if (!b.answer) return -1
 
       return b.score - a.score
     })
-    .filter((r) => r.answer.length > 0)
+    //removeDuplicates
+    .filter((thing, idx, self) => idx === self.findIndex((t) => t.answer === thing.answer && t.score === thing.score))
 
   if (cleaned.length === 0) {
     res.json({ result: [{ score: 100, answer: '' }] })
