@@ -13,10 +13,15 @@ const getParagraphs = (sentences: string[]) => {
   const paragraphs: string[] = []
 
   for (const sentence of sentences) {
-    const words = sentence.split(' ')
+    const words = sentence.trim().split(' ')
 
     if (words.length + paragraph.length > MAX_PARAGRAPH_SIZE) {
-      paragraphs.push(paragraph.join(' ').slice(0))
+      paragraphs.push(
+        paragraph
+          .join(' ')
+          .slice(0)
+          .trim()
+      )
       console.log(paragraph.length)
       paragraph = []
     }

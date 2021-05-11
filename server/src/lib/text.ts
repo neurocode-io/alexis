@@ -18,9 +18,10 @@ const isSentence = (sentence: string) => {
 const cleanText = (text: string) =>
   text
     .replace(/\s+/g, ' ')
-    .trim()
     .replace(/‐ /g, '')
     .replace(/- /g, '')
     .replace(/’/g, `'`)
+    .replace(/‘/g, `'`)
+    .trim()
 
 export { cleanText, isSentence }
