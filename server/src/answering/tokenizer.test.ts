@@ -1,7 +1,8 @@
-import * as t from './tokenizer'
+import { createTokenizer } from './tokenizer'
 
 describe('answering/tokenizer', () => {
   it('should encode', async () => {
+    const t = createTokenizer()
     const encoded = await t.encode('What is your name?', 'My name is Jack')
 
     expect(encoded.length).toEqual(384)
@@ -10,6 +11,7 @@ describe('answering/tokenizer', () => {
   })
 
   it('long encodeing', async () => {
+    const t = createTokenizer()
     const encoded = await t.encode('What is your name?', 'My name is Jack'.repeat(350))
 
     expect(encoded.length).toEqual(384)
@@ -17,6 +19,8 @@ describe('answering/tokenizer', () => {
   })
 
   it('should decode', async () => {
+    const t = createTokenizer()
+
     const encoded = await t.encode('What is your name?', 'My name is Jack')
     const decoded = await t.decode(encoded.ids, 0, 5)
 

@@ -1,7 +1,9 @@
 import log from '../lib/log'
 import { argMax, round, softMax } from '../lib/math'
 import { runInference } from './inference'
-import { decode, encode } from './tokenizer'
+import { createTokenizer } from './tokenizer'
+
+const tokenizer = createTokenizer()
 
 const clean = (answer: string) => {
   const [firstLetter, ...rest] = answer.trim()
@@ -17,7 +19,7 @@ const getAnswer = async (question: string, context: string) => {
     score: number
   }[] = []
 
-  const encoded = await encode(question, context)
+  const encoded = await tokenizer.encode(question, context)
   const inputs = [encoded, ...encoded.overflowing]
 
   for (const input of inputs) {
@@ -29,7 +31,7 @@ const getAnswer = async (question: string, context: string) => {
     const endIdx = argMax(ansEnd)
 
     const score = (startProbs[startIdx] ?? 0) * (endProbs[endIdx] ?? 0)
-    const answer = await decode(input.ids, startIdx, endIdx + 1)
+    const answer = await tokenizer.decode(input.ids, startIdx, endIdx + 1)
 
     answers.push({ answer, score })
   }
