@@ -32,10 +32,10 @@ const initTokenizer = async (maxLength: number) => {
     padToken: specialTokens.padToken,
     padId: tokenizer.tokenToId(specialTokens.padToken)
   })
-  tokenizer.setTruncation(maxLength, { strategy: TruncationStrategy.OnlySecond, stride: 128 })
+  tokenizer.setTruncation(maxLength, { strategy: TruncationStrategy.OnlySecond, stride: 24 })
 }
 
-const encode = async (question: string, context: string, maxLength = 512) => {
+const encode = async (question: string, context: string, maxLength = 384) => {
   if (!tokenizer) await initTokenizer(maxLength)
 
   return tokenizer.encode(
@@ -44,7 +44,7 @@ const encode = async (question: string, context: string, maxLength = 512) => {
   )
 }
 
-const decode = async (encodingIds: number[], start?: number, end?: number, maxLength = 512) => {
+const decode = async (encodingIds: number[], start?: number, end?: number, maxLength = 384) => {
   if (!tokenizer) await initTokenizer(maxLength)
 
   return tokenizer.decode(encodingIds.slice(start ?? 0, end ?? encodingIds.length))

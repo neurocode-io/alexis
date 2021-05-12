@@ -32,7 +32,7 @@ const runInference = async (
   const model = {
     numberType: 'int64',
     xDim: 1,
-    yDim: 512
+    yDim: 384
   }
 
   const [_1, _2, _3, ansStart, ansEnd] = await r.send_command(
