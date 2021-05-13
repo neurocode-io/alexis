@@ -37,7 +37,7 @@ export const createTokenizer = () => {
         padToken: specialTokens.padToken,
         padId: tokenizer.tokenToId(specialTokens.padToken)
       })
-      tokenizer.setTruncation(MAX_TOKENIZER_LENGTH, { strategy: TruncationStrategy.OnlySecond, stride: 128 })
+      tokenizer.setTruncation(MAX_TOKENIZER_LENGTH, { strategy: TruncationStrategy.OnlySecond })
     }
 
     initializePromise = initializePromise || initializeInternal()

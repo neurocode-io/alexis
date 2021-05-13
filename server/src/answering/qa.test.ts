@@ -34,7 +34,7 @@ describe('answering/qa', () => {
     )
 
     expect(answer).toEqual('Scientific archaeology')
-    expect(score).toEqual(0.54)
+    expect(score).toEqual(0.69)
   })
 
   it('should not answer the question given a nonsense context', async () => {
@@ -54,7 +54,7 @@ describe('answering/qa', () => {
     const { answer: a3 } = await getAnswer('Who suffered the same fate as Anderson Silva?', context)
 
     expect(a1).toEqual('17 seconds flat')
-    expect(a2).toEqual('') // Valentina Shevchenko
+    expect(a2).toEqual('Valentina Shevchenko') 
     expect(a3).toEqual('Chris Weidman')
   })
 })
