@@ -113,18 +113,18 @@ const upload = (file: File) => {
     .catch((error) => console.log(error))
 }
 
-interface Props extends WithStyles<typeof main> {
-  activeStep: number
-}
+interface Props extends WithStyles<typeof main> {}
+
 type Answers = { answer: string; score: number }[]
 type AnswerResp = { result: Answers }
 
 const CustomizedSteppers = (props: Props) => {
   const history = useHistory()
   const pdfs = usePdf()
+  const sd = pdfs.length === 0 ? 0 : 1
   const [files, setFiles] = useState<File[]>()
   const [uploading, setUploading] = useState(false)
-  const [activeStep, setActiveStep] = useState(props.activeStep)
+  const [activeStep, setActiveStep] = useState(sd)
   const submitRef = useRef({
     getState: () => ({
       isRunning: false,

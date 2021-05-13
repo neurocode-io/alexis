@@ -31,7 +31,7 @@ const CustomizedSteppers = (props: Props) => {
   }, [history])
 
   const getIndexedLibrary = () => {
-    console.log(pdfs)
+    console.log(pdfs.length)
     if (pdfs.length === 0) {
       return <p>Start by adding documents to your library!</p>
     } else {
@@ -55,7 +55,7 @@ const CustomizedSteppers = (props: Props) => {
         <h3>Hello {user}</h3>
         {getIndexedLibrary()}
         <div className={classes.paperContainer}>
-          <Stepper activeStep={pdfs.length === 0 ? 0 : 1} />
+          <Stepper />
         </div>
       </Paper>
     </div>
