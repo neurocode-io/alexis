@@ -14,7 +14,7 @@ const loadModel = async () => {
   const QAmodel = path.join(__dirname, 'onnx-model', 'ro-optimized.onnx')
   const qa = await fs.readFile(QAmodel)
 
-  await r.send_command('AI.MODELSTORE', MODEL_NAME, 'ONNX', 'CPU', 'BLOB', qa)
+  await r.send_command('AI.MODELSET', MODEL_NAME, 'ONNX', 'CPU', 'BLOB', qa)
 
   return r.send_command('AI.INFO', MODEL_NAME) as Promise<AiInfoOutput>
 }
