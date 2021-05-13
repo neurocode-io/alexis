@@ -30,9 +30,9 @@ const getAnswer = async (question: string, context: string) => {
     const startIdx = argMax(ansStart)
     const endIdx = argMax(ansEnd)
 
-    const score = (startProbs[startIdx] ?? 0) * (endProbs[endIdx] ?? 0)
-    const answer = await tokenizer.decode(input.ids, startIdx, endIdx + 1)
-
+    let score = (startProbs[startIdx] ?? 0) * (endProbs[endIdx] ?? 0)
+    let answer = await tokenizer.decode(input.ids, startIdx, endIdx + 1)
+    answer.length < 32 ? { answer, score } = { answer, score } : { answer, score } = {answer: '', score: 0}
     answers.push({ answer, score })
   }
 
