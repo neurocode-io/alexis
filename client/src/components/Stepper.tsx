@@ -12,7 +12,7 @@ import clsx from 'clsx'
 import Stepper from '@material-ui/core/Stepper'
 import Step from '@material-ui/core/Step'
 import StepLabel from '@material-ui/core/StepLabel'
-import CloudUploadIcon from '@material-ui/icons/CloudUpload'
+import LibraryBooksIcon from '@material-ui/icons/LibraryBooks'
 import FindInPageIcon from '@material-ui/icons/FindInPage'
 import PictureAsPdf from '@material-ui/icons/PictureAsPdf'
 import StepConnector from '@material-ui/core/StepConnector'
@@ -22,6 +22,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Typography from '@material-ui/core/Typography'
 import { main } from './styles'
 import Query from './Query'
+import { actions, usePdf } from '../store'
 
 const ColorlibConnector = withStyles({
   alternativeLabel: {
@@ -54,7 +55,6 @@ const useColorlibStepIconStyles = makeStyles({
   root: {
     backgroundColor: '#ccc',
     zIndex: 1,
-    // color: '#fff',
     width: 50,
     height: 50,
     display: 'flex',
@@ -74,7 +74,7 @@ const ColorlibStepIcon = (props: { active: boolean; icon: number }) => {
   const { active, icon } = props
 
   const icons = new Map<number, JSX.Element>()
-  icons.set(1, <CloudUploadIcon />)
+  icons.set(1, <LibraryBooksIcon />)
   icons.set(2, <FindInPageIcon />)
 
   return (
@@ -88,12 +88,12 @@ const ColorlibStepIcon = (props: { active: boolean; icon: number }) => {
   )
 }
 
-const getSteps = () => ['Knowledge source', 'Query']
+const getSteps = () => ['Indexed library', 'Query']
 
 const getStepContent = (step: number) => {
   switch (step) {
     case 0:
-      return 'Upload a Knowledge source. Currently only PDFs are supported.'
+      return 'Add to your index by uploading documents.'
     case 1:
       return 'Search your documents with natural questions!'
     default:
@@ -104,7 +104,7 @@ const upload = (file: File) => {
   const data = new FormData()
   data.append('file-to-upload', file)
 
-  fetch('/knowledge-source/pdf', {
+  fetch('/pdf', {
     method: 'POST',
     body: data,
   })
@@ -114,14 +114,17 @@ const upload = (file: File) => {
 }
 
 interface Props extends WithStyles<typeof main> {}
+
 type Answers = { answer: string; score: number }[]
 type AnswerResp = { result: Answers }
 
 const CustomizedSteppers = (props: Props) => {
   const history = useHistory()
+  const pdfs = usePdf()
+  const sd = pdfs.length === 0 ? 0 : 1
   const [files, setFiles] = useState<File[]>()
   const [uploading, setUploading] = useState(false)
-  const [activeStep, setActiveStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(sd)
   const submitRef = useRef({
     getState: () => ({
       isRunning: false,
@@ -154,7 +157,7 @@ const CustomizedSteppers = (props: Props) => {
       query: submitRef.current.getState().query,
     })
 
-    const resp = await fetch('/v1/ask', {
+    const resp = await fetch('/v1/query', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -192,7 +195,13 @@ const CustomizedSteppers = (props: Props) => {
     if (activeStep === 0 && files && files.length > 0) {
       console.log('upload')
       handleStart()
-      await Promise.all(files.map((file: File) => upload(file)))
+      await Promise.all(
+        files.map((file: File) => {
+          upload(file)
+          return actions.addPdf({ fileName: file.name })
+        }),
+      )
+      console.log(pdfs)
       handleFinish()
     }
 
@@ -228,7 +237,7 @@ const CustomizedSteppers = (props: Props) => {
           <DropzoneArea
             getPreviewIcon={handlePdfPreview}
             acceptedFiles={['application/pdf']}
-            dropzoneText="Drag and your PDFs here or click"
+            dropzoneText="Drag & drop your PDFs or click here"
             filesLimit={5}
             showFileNamesInPreview
             maxFileSize={50 * 1e6}

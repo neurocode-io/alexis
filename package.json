@@ -6,8 +6,10 @@
   "scripts": {
     "bootstrap": "cd client && npm install",
     "postbootstrap": "cd server && npm install",
-    "client": "cd client && npm run start",
+    "waitForBackend": "sleep 5",
+    "frontend": "cd client && npm run start",
     "server": "cd server && npm run start",
+    "client": "run-s waitForBackend frontend",
     "start": "run-p server client",
     "test": "cd server && npm test"
   },

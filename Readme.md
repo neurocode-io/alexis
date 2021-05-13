@@ -1,6 +1,6 @@
 # Alexis
 
-Alexis is an app that uses RedisAI and RediSearch to retrieve information from a corpus (knowledge source) in response to a query. Essentially it's a text ranker that uses natural language processing in combination with the BM25 ranking function to both retrieve and answer questions in response to user queries.
+Alexis is an app that uses RedisAI and RediSearch to retrieve information from a corpus (indexed library) in response to a query. Essentially it's a text ranker that uses natural language processing in combination with the BM25 ranking function to both retrieve and answer questions in response to user queries.
 
 We all are familar with keyword search, also called keyword querying, where a user types a few query terms into a search box and gets back results containing representations of the indexed sources.
 
@@ -27,11 +27,11 @@ POST /v1/login
 POST /v1/logout
 GET /v1/me
 
-POST /knowledge-source/pdf  (pdfUpload)
-POST /v1/ask
+POST /pdf  (pdfUpload)
+POST /v1/query
 ```
 
-Once a user registers and logs into the app. He can start adding PDFs to his knowledge source (index).
+Once a user registers and logs into the app. He can start adding documents to his indexed library.
 A PDF upload kicks write to a redis stream that is picked by a consumer group (1) for async processing. The consumer / worker processes the PDF, applies some cleaning and stores the PDF in a Redis hash that is indexed with RediSearch.
 
 Afterwards the user can send natural queries to the server and is not confied to basic key word search such as "kubernetes deployments", "DDD root aggregate" etc.. but can query with more relevance such as "how do kubernetes deployments get updated?", "what is the role of a root aggregate in DDD"
