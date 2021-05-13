@@ -32,7 +32,7 @@ POST /v1/query
 ```
 
 Once a user registers and logs into the app. He can start adding documents to his indexed library.
-A PDF upload kicks write to a redis stream that is picked by a consumer group (1) for async processing. The consumer / worker processes the PDF, applies some cleaning and stores the PDF in a Redis hash that is indexed with RediSearch.
+A PDF upload kicks an event to redis stream that is picked by a consumer group (1) for async processing. The consumer / worker processes the PDF, applies some cleaning and stores the PDF in a Redis hash that is indexed with RediSearch.
 
 Afterwards the user can send natural queries to the server and is not confied to basic key word search such as "kubernetes deployments", "DDD root aggregate" etc.. but can query with more relevance such as "how do kubernetes deployments get updated?", "what is the role of a root aggregate in DDD"
 
