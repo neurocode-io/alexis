@@ -55,6 +55,6 @@ const ask = async (req: Request, res: Response) => {
   res.status(200).json({ result: cleaned })
 }
 
-router.post('/ask', auth, express.json(), safeRouteHandler(ask))
+router.post('/query', auth, express.json(), safeRouteHandler(ask))
 
 export default router

@@ -26,7 +26,7 @@ app.get('/', (_req: Request, res: Response) => {
 
 app.use('/v1', userRouter)
 app.use('/v1', qaRouter)
-app.use('/knowledge-source', pdfRouter)
+app.use(pdfRouter)
 
 app.use(errorHandler(logger))
 
