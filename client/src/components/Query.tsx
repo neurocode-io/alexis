@@ -44,14 +44,17 @@ const Query = forwardRef((props: Props, ref) => {
 
   return (
     <>
-      <form className={classes.form} onSubmit={submitQuery}>
+      <form className={classes.form} autoComplete="off" onSubmit={submitQuery}>
         <FormControl required fullWidth margin="normal">
           <InputLabel htmlFor="query" className={classes.labels}>
             query
           </InputLabel>
           <Input
+            multiline
+            rows={3}
+            rowsMax={3}
             name="query"
-            type="query"
+            type="text"
             className={classes.inputs}
             style={{ width: '400px' }}
             disableUnderline={true}
@@ -64,8 +67,8 @@ const Query = forwardRef((props: Props, ref) => {
         <h3 hidden={state.result === undefined}>Results</h3>
         {state.result?.map(({ score, answer }) => (
           <p key={score}>
-            Score: {score} <br />
-            Answer: {answer}
+            Answer: {answer} <br />
+            Score: {score}
           </p>
         ))}
       </Container>
