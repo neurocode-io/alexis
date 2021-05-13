@@ -1,3 +1,5 @@
+const whQuestions = ['who', 'what', 'how', 'why', 'whom', 'whose', 'where']
+
 const isSentence = (sentence: string) => {
   const words = sentence.split(' ')
 
@@ -24,4 +26,17 @@ const cleanText = (text: string) =>
     .replace(/‘/g, `'`)
     .trim()
 
-export { cleanText, isSentence }
+const cleanQuestion = (text: string) => {
+  if (text.length === 0) return text
+  text = text.slice(-1) === '?' ? text.slice(0, -1) : text
+
+  const textArray = text.split(' ')
+  const firstWord = textArray[0]
+  if (whQuestions.find((element) => element == (firstWord ? firstWord : '').toLowerCase())) {
+    textArray.shift()
+  }
+
+  return textArray.join(' ')
+}
+
+export { cleanText, isSentence, cleanQuestion }

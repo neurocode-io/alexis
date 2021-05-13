@@ -3,7 +3,7 @@ import * as z from 'zod'
 
 import { auth, safeRouteHandler } from '../lib/express'
 import log from '../lib/log'
-import { cleanText } from '../lib/text'
+import { cleanQuestion } from '../lib/text'
 import { getAnswer } from './qa'
 import { lookUp } from './search'
 
@@ -16,7 +16,7 @@ const searchSchema = z.object({
 const ask = async (req: Request, res: Response) => {
   const input = await searchSchema.parseAsync(req.body)
   const userId = req.session.userId
-  const resp = await lookUp(userId, cleanText(input.query))
+  const resp = await lookUp(userId, cleanQuestion(input.query))
 
   if (resp.length === 0) {
     res.json({ result: [{ score: 100, answer: '' }] })
