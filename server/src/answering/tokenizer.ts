@@ -23,6 +23,7 @@ export const createTokenizer = () => {
     const initializeInternal = async () => {
       const merges = path.join(__dirname, 'onnx-model', 'merges.txt')
       const vocab = path.join(__dirname, 'onnx-model', 'vocab.json')
+
       await Promise.all([fs.stat(merges), fs.stat(vocab)]).catch((e) => createError(errors.tokenizerMissingFiles, e))
 
       tokenizer = await ByteLevelBPETokenizer.fromOptions({
