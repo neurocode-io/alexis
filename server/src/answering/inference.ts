@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs'
+import { MAX_TOKENIZER_LENGTH } from './tokenizer'
 import path from 'path'
 
 import r from '../lib/redis'
@@ -32,7 +33,7 @@ const runInference = async (
   const model = {
     numberType: 'int64',
     xDim: 1,
-    yDim: 384
+    yDim: MAX_TOKENIZER_LENGTH
   }
 
   const [_1, _2, _3, ansStart, ansEnd] = await r.send_command(

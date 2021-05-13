@@ -16,7 +16,9 @@ const specialTokens = {
   unkToken: '<unk>'
 }
 
-export const createTokenizer = (maxLength = 384) => {
+export const MAX_TOKENIZER_LENGTH = 384
+
+export const createTokenizer = () => {
   const initialize = () => {
     const initializeInternal = async () => {
       const merges = path.join(__dirname, 'onnx-model', 'merges.txt')
@@ -31,11 +33,11 @@ export const createTokenizer = (maxLength = 384) => {
 
       tokenizer.addSpecialTokens(Object.values(specialTokens))
       tokenizer.setPadding({
-        maxLength,
+        maxLength: MAX_TOKENIZER_LENGTH,
         padToken: specialTokens.padToken,
         padId: tokenizer.tokenToId(specialTokens.padToken)
       })
-      tokenizer.setTruncation(maxLength, { strategy: TruncationStrategy.OnlySecond, stride: 24 })
+      tokenizer.setTruncation(MAX_TOKENIZER_LENGTH, { strategy: TruncationStrategy.OnlySecond, stride: 128 })
     }
 
     initializePromise = initializePromise || initializeInternal()
@@ -60,4 +62,3 @@ export const createTokenizer = (maxLength = 384) => {
 
   return { encode, decode }
 }
-
