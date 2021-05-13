@@ -34,7 +34,7 @@ describe('answering/qa', () => {
     )
 
     expect(answer).toEqual('Scientific archaeology')
-    expect(score).toEqual(0.61)
+    expect(score).toEqual(0.54)
   })
 
   it('should not answer the question given a nonsense context', async () => {
