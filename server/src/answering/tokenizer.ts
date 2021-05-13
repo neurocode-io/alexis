@@ -40,7 +40,7 @@ export const createTokenizer = () => {
       tokenizer.setTruncation(MAX_TOKENIZER_LENGTH, { strategy: TruncationStrategy.OnlySecond, stride: 128 })
     }
 
-    initializePromise = initializePromise || initializeInternal()
+    initializePromise = initializePromise ?? initializeInternal()
 
     return initializePromise
   }
