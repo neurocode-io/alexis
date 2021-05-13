@@ -121,10 +121,9 @@ type AnswerResp = { result: Answers }
 const CustomizedSteppers = (props: Props) => {
   const history = useHistory()
   const pdfs = usePdf()
-  const sd = pdfs.length === 0 ? 0 : 1
   const [files, setFiles] = useState<File[]>()
   const [uploading, setUploading] = useState(false)
-  const [activeStep, setActiveStep] = useState(sd)
+  const [activeStep, setActiveStep] = useState(0)
   const submitRef = useRef({
     getState: () => ({
       isRunning: false,

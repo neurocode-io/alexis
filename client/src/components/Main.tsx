@@ -31,7 +31,6 @@ const CustomizedSteppers = (props: Props) => {
   }, [history])
 
   const getIndexedLibrary = () => {
-    console.log(pdfs.length)
     if (pdfs.length === 0) {
       return <p>Start by adding documents to your library!</p>
     } else {
