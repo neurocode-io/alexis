@@ -6,7 +6,7 @@
   "root": true,
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": ["tsconfig.json"]
+    "project": ["./server/tsconfig.json"]
   },
   "ignorePatterns": [".serverless", "build", "dist"],
   "plugins": ["@typescript-eslint", "import", "simple-import-sort", "security"],
