@@ -49,7 +49,6 @@ const createUser = async (newUser: User) => {
       ['hmset', idx('email'), newUser.email, userId]
     ])
     .exec()
-    .catch(console.error)
 }
 
 const checkUser = async (email: string, password: string): Promise<string | never> => {
