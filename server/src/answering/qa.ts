@@ -1,10 +1,10 @@
 import { split, Syntax } from 'sentence-splitter'
+
 import log from '../lib/log'
 import { argMax, round, softMax } from '../lib/math'
 import { isSentence } from '../lib/text'
 import { runInference } from './inference'
 import { createTokenizer } from './tokenizer'
-
 
 const MAX_BUFFER_SIZE = 250
 const MAX_QUESTION_SIZE = 50
@@ -15,9 +15,9 @@ const getParagraphs = (page: string) => {
   let paragraph: string[] = []
 
   const sentences = split(page)
-  .filter((node) => node.type === Syntax.Sentence)
-  .filter((sentence) => isSentence(sentence.raw))
-  .map((sentence) => sentence.raw)
+    .filter((node) => node.type === Syntax.Sentence)
+    .filter((sentence) => isSentence(sentence.raw))
+    .map((sentence) => sentence.raw)
 
   for (const sentence of sentences) {
     const words = sentence.split(' ')
@@ -55,8 +55,8 @@ const getAnswer = async (question: string, context: string) => {
     score: number
   }[] = []
 
-
   const inputs = getParagraphs(context)
+
   for (const input of inputs) {
     const encoded = await tokenizer.encode(question, input)
     const { ansStart, ansEnd } = await runInference(encoded.ids, encoded.attentionMask)
@@ -66,9 +66,8 @@ const getAnswer = async (question: string, context: string) => {
     const startIdx = argMax(ansStart)
     const endIdx = argMax(ansEnd)
 
-
     const score = (startProbs[startIdx] ?? 0) * (endProbs[endIdx] ?? 0)
-    const answer = await tokenizer.decode(input.ids, startIdx, endIdx + 1)
+    const answer = await tokenizer.decode(encoded.ids, startIdx, endIdx + 1)
 
     isShort(answer) ? answers.push({ answer, score }) : answers.push({ answer: '', score: 0 })
   }
