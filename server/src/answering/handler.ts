@@ -13,6 +13,8 @@ const searchSchema = z.object({
   query: z.string()
 })
 
+const TOP_K = 3
+
 const ask = async (req: Request, res: Response) => {
   const input = await searchSchema.parseAsync(req.body)
   const userId = req.session.userId
@@ -52,9 +54,9 @@ const ask = async (req: Request, res: Response) => {
     return
   }
 
-  res.status(200).json({ result: cleaned })
+  res.status(200).json({ result: cleaned.splice(0, TOP_K) })
 }
 
-router.post('/ask', auth, express.json(), safeRouteHandler(ask))
+router.post('/query', auth, express.json(), safeRouteHandler(ask))
 
 export default router

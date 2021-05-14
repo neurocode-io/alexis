@@ -31,8 +31,10 @@ export const main = (theme: Theme) =>
       textAlign: 'right',
     },
     instructions: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
+      marginTop: theme.spacing(3),
+      marginBottom: theme.spacing(3),
+      maxWidth: '400px',
+      textAlign: 'center',
     },
     paper: {
       marginTop: theme.spacing(2),
@@ -72,7 +74,7 @@ export const main = (theme: Theme) =>
     },
     labels: {
       padding: `${theme.spacing(1)}px ${theme.spacing(4)}px`,
-      fontSize: '10px',
+      fontSize: '12px',
       lineHeight: '5px',
       fontFamily: 'PT Mono, monospace',
       fontWeight: 300,
@@ -84,6 +86,7 @@ export const main = (theme: Theme) =>
       position: 'relative',
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1),
+      // WebkitBoxShadow: 'rgba(169,198,217,0.36457423)',
       fontFamily: 'Cutive Mono, monospace',
       color: textDark,
       fontSize: '14px',

@@ -94,10 +94,11 @@ const Registration = (props: Props) => {
 
       <Paper className={classes.paper}>
         <div className={classes.paperContainer}>
-          {/* <Avatar className={classes.avatar}>
-          <img className={classes.icon} src={avatar} alt="Avatar" />
-        </Avatar> */}
-          <form className={classes.form} onSubmit={() => submitRegistration}>
+          <form
+            className={classes.form}
+            autoComplete="off"
+            onSubmit={() => submitRegistration}
+          >
             <FormControl required fullWidth margin="normal">
               <InputLabel htmlFor="name" className={classes.labels}>
                 First name

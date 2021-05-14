@@ -32,6 +32,7 @@ const cleanQuestion = (text: string) => {
 
   const textArray = text.split(' ')
   const firstWord = textArray[0]
+
   if (whQuestions.find((element) => element == (firstWord ? firstWord : '').toLowerCase())) {
     textArray.shift()
   }
@@ -39,4 +40,4 @@ const cleanQuestion = (text: string) => {
   return textArray.join(' ')
 }
 
-export { cleanText, isSentence, cleanQuestion }
+export { cleanQuestion, cleanText, isSentence }

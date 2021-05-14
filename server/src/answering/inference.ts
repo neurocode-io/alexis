@@ -1,8 +1,8 @@
 import { promises as fs } from 'fs'
-import { MAX_TOKENIZER_LENGTH } from './tokenizer'
 import path from 'path'
 
 import r from '../lib/redis'
+import { MAX_TOKENIZER_LENGTH } from './tokenizer'
 
 type AiInfoOutput = {
   [key: string]: string | number
