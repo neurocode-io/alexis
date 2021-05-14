@@ -6,7 +6,7 @@ import { getText } from '../lib/pdf'
 import r, { idx, key } from '../lib/redis'
 import { cleanText, isSentence } from '../lib/text'
 
-const MAX_PARAGRAPH_SIZE = 540
+const MAX_PARAGRAPH_SIZE = 600
 let paragraph: string[] = []
 
 const getParagraphs = (sentences: string[]) => {
