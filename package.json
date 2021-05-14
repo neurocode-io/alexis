@@ -4,8 +4,10 @@
   "description": "alexis for now",
   "main": "dist/index.js",
   "scripts": {
-    "bootstrap": "cd client && npm install",
-    "postbootstrap": "cd server && npm install",
+    "dockerbootstrap": "docker-compose pull ; docker-compose build",
+    "clientbootstrap": "cd client && npm install",
+    "serverbootstrap": "cd server && npm install",
+    "bootstrap": "run-p dockerbootstrap clientbootstrap serverbootstrap",
     "waitForBackend": "sleep 5",
     "frontend": "cd client && npm run start",
     "server": "cd server && npm run start",
