@@ -20,9 +20,6 @@ app.use(
     secure: process.env.NODE_ENV === 'production'
   })
 )
-app.get('/', (_req: Request, res: Response) => {
-  res.sendFile(`${__dirname}/index.html`)
-})
 
 app.use('/v1', userRouter)
 app.use('/v1', qaRouter)
