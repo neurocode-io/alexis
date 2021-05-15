@@ -9,8 +9,31 @@ Alexis extends this basic keyword search by providing a more natural way of sear
 ## Screenshots
 
 
-![Login](https://github.com/NeuroCode-io/alexis/raw/main/docs/1.png)
-![How it works](https://github.com/NeuroCode-io/alexis/raw/main/docs/4.png)
+![Login](https://github.com/NeuroCode-io/alexis/raw/main/docs/login.png)
+![How it works](https://github.com/NeuroCode-io/alexis/raw/main/docs/answer.png)
+
+## Flowchart
+
+A general overview of what Alexis does can be represented as follows:
+
+![generalOverview](https://github.com/NeuroCode-io/alexis/raw/main/docs/generalOverview.png)
+
+Now let's break down how the *Upload PDFs & Index PDF Content* and the *Answer Query* parts of the flowchart operate! 
+
+### Upload PDFs & Index PDF Content
+
+![uploadAndIndex](https://github.com/NeuroCode-io/alexis/raw/main/docs/uploadAndIndex.png)
+
+### Answer Query
+
+![answerQuery](https://github.com/NeuroCode-io/alexis/raw/main/docs/answerQuery.png)
+
+Finally if we put all the pieces back together we would get the following:
+
+### Complete Flowchart
+
+![fullGraph](https://github.com/NeuroCode-io/alexis/raw/main/docs/fullGraph.png)
+
 
 ## Architecture
 
