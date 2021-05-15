@@ -9,30 +9,30 @@ Alexis extends this basic keyword search by providing a more natural way of sear
 ## Screenshots
 
 
-![Login](https://github.com/NeuroCode-io/alexis/raw/main/docs/login.png)
-![How it works](https://github.com/NeuroCode-io/alexis/raw/main/docs/answer.png)
+![Login](https://github.com/neurocode-io/alexis/raw/main/docs/login.png)
+![How it works](https://github.com/neurocode-io/alexis/raw/main/docs/answer.png)
 
 ## Flowchart
 
 A general overview of what Alexis does can be represented as follows:
 
-![generalOverview](https://github.com/NeuroCode-io/alexis/raw/main/docs/generalOverview.png)
+![generalOverview](https://github.com/neurocode-io/alexis/raw/main/docs/general-overview.png)
 
 Now let's break down how the *Upload PDFs & Index PDF Content* and the *Answer Query* parts of the flowchart operate! 
 
 ### Upload PDFs & Index PDF Content
 
-![uploadAndIndex](https://github.com/NeuroCode-io/alexis/raw/main/docs/uploadAndIndex.png)
+![uploadAndIndex](https://github.com/neurocode-io/alexis/raw/main/docs/upload-and-index.png)
 
 ### Answer Query
 
-![answerQuery](https://github.com/NeuroCode-io/alexis/raw/main/docs/answerQuery.png)
+![answerQuery](https://github.com/neurocode-io/alexis/raw/main/docs/answer-query.png)
 
 Finally if we put all the pieces back together we would get the following:
 
 ### Complete Flowchart
 
-![fullGraph](https://github.com/NeuroCode-io/alexis/raw/main/docs/fullGraph.png)
+![fullGraph](https://github.com/neurocode-io/alexis/raw/main/docs/full-graph.png)
 
 
 ## Architecture
