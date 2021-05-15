@@ -1,6 +1,6 @@
 # Alexis
 
-Alexis is an app that uses RedisAI and RediSearch to retrieve information from a corpus (indexed library) in response to a query.  Essentially, it's a text ranker that uses natural language processing combined with the BM25 ranking function to retrieve and answer questions in response to user queries.
+Alexis is an app that uses RedisAI and RediSearch to retrieve information from a corpus (indexed library) in response to a query. Essentially, it's a text ranker that uses natural language processing combined with the BM25 ranking function to retrieve and answer questions in response to user queries.
 
 We all are familiar with keyword search, also called keyword querying, where a user types a few query terms into a search box and gets back results containing representations of the indexed sources.
 
