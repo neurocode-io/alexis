@@ -105,7 +105,7 @@ The app: http://localhost:3000
 
 Redis Insight: http://localhost:8001
 
-### Test
+## Test
 
 ```
 npm test
