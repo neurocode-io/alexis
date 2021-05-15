@@ -1,8 +1,10 @@
 {
   "name": "alexis",
   "version": "0.1.0",
-  "description": "alexis for now",
+  "description": "Information retrieval using RediSearch an AI",
+  "author": "donchev7",
   "main": "dist/index.js",
+  "license": "MIT",
   "scripts": {
     "dockerbootstrap": "docker-compose pull ; docker-compose build",
     "clientbootstrap": "cd client && npm install",

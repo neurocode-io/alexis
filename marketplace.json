@@ -1,0 +1,47 @@
+{
+  "app_name": "Alexis",
+  "description": "Information retrival using RediSearch an AI",
+  "hidden": false,
+  "rank": 21,
+  "type": "Full App",
+  "contributed_by": "Community",
+  "repo_url": "https://github.com/neurocode-io/alexis",
+  "download_url": "https://github.com/neurocode-io/alexis/archive/refs/heads/main.zip",
+  "hosted_url": "",
+  "quick_deploy": "false",
+  "language": [
+    "TypeScript"
+  ],
+  "redis_commands": [
+    "HSET",
+    "XGROUPCREATE",
+    "XREADGROUP",
+    "XACK",
+    "AI.DIAGRUN",
+    "AI.MODELSET",
+    "FT.CREATE",
+    "FT.SEARCH",
+    "JSON.GET",
+    "JSON.SET"
+  ],
+  "redis_features": [
+    "sessions",
+    "search",
+    "inference",
+    "json"
+  ],
+  "redis_modules": [
+    "RedisJSON",
+    "RediSearch",
+    "RedisAI"
+  ],
+  "youtube_url": "https://youtu.be/c4OahbmV90M",
+  "special_tags": [
+    "Hackathon"
+  ],
+  "verticals": [
+    "Technology",
+    "Education"
+  ],
+  "markdown": "https://github.com/neurocode-io/alexis/blob/main/Readme.md"
+}

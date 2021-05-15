@@ -6,6 +6,11 @@ We all are familar with keyword search, also called keyword querying, where a us
 
 Alexis extends this basic keyword search by providing a more natural way of searching indexed sources. Furthermore it aims to identify a span of text that directly answers the query, instead of returning a list of documents (or extracts of documents).
 
+## Screenshots
+
+
+![Login](docs/1.png)
+![How it works](docs/4.png)
 
 ## Architecture
 
@@ -37,7 +42,56 @@ A PDF upload kicks an event to redis stream that is picked by a consumer group (
 Afterwards the user can send natural queries to the server and is not confied to basic key word search such as "kubernetes deployments", "DDD root aggregate" etc.. but can query with more relevance such as "how do kubernetes deployments get updated?", "what is the role of a root aggregate in DDD"
 
 
-## Running the app
+# How it works?
+
+## 1. How the data is stored
+
+1. The user data is stored in a RedisJSON:
+
+```
+{
+ firstName: string
+ lastName: string
+ email: string
+ password: string
+ pdfs: Array<{id: string, fileName: string}>
+}
+```
+
+2. A RediSearch index is created for each user with:
+   
+```
+FT.CREATE ax:idx:<userId> on HASH PREFIX 1 ax:pdfs:<userId> SCHEMA content TEXT PHONETIC dm:en
+```
+
+3. The hash that stores the pdf content is created within a consumer group that reads off an stream called **ax:stream:pdf-processing**. The payload of the stream is
+   
+```
+{
+  id: string,
+  fileName: string
+}
+```
+
+4. A consumer within the consumer group picks this event off the stream and processess the file and writes the content in a hash:
+
+```
+HSET ax:pdfs:<userId>.<paragraph> content <cleanedParagraphBloc> fileName <pdfFileName>
+```
+
+## 2. How the data is accessed
+
+1. As mentioned earlier. We have an RediSearch index for each user that indexes this hash and provides lookup capabilities to find relevant content given a user query. We look up content with:
+
+```
+FT.SEARCH ax:idx:<userId> '@content:<userQuery>' SCORER BM25 WITHSCORES LIMIT 0 4
+```
+
+2. The returned content from RediSearch we feed into the AI model that is being surfed with RedisAI!
+
+
+
+## How to run it locally?
 
 You you run the app by running the following commands:
 
@@ -47,9 +101,9 @@ You you run the app by running the following commands:
 3. npm start
 
 
-Redis Insight: http://localhost:8001
+The app: http://localhost:3000
 
-Web Server: http://localhost:3000
+Redis Insight: http://localhost:8001
 
 ### Test
 
