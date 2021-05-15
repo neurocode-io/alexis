@@ -1,5 +1,5 @@
-
-flowchart TB
+graph LR
+    subgraph Upload PDFs & Index PDF Content
     uploadPdf1[upload PDF]
     uploadPdf2[upload PDF]
     uploadPdf3[upload PDF]
@@ -10,22 +10,6 @@ flowchart TB
     process[Process PDF]
     store[Index PDF Content]
 
-    question[Question]
-    search[Redisearch + BM25]
-    ai1[Redis AI]
-    ai2[Redis AI]
-    ai3[Redis AI]
-    ai4[Redis AI]
-
-    infere1[Run Inference]
-    infere2[Run Inference]
-    infere3[Run Inference]
-    infere4[Run Inference]
-
-    evaluate{Evaluate Answers}
-    display[Display Answer/Answers]
-
-    subgraph one[Upload PDFs & Index PDF Content]
     uploadPdf1 -->stream
     uploadPdf2 -->stream
     uploadPdf3 -->stream
@@ -36,32 +20,4 @@ flowchart TB
     process --> store
     store -.->consumer
     end
-
-    subgraph two [Answer Query]
-    search --> |Result 1|ai1
-    search --> |Result 2|ai2
-    search --> |Result 3|ai3
-    search --> |Result 4|ai4
-
-    question --> search
-    question --> ai1
-    question --> ai2
-    question --> ai3
-    question --> ai4
-
-    ai1 --> infere1
-    ai2 --> infere2
-    ai3 --> infere3
-    ai4 --> infere4
-
-    infere1 --> |answer| evaluate
-    infere2 --> |answer| evaluate
-    infere3 --> |answer| evaluate
-    infere4 --> |answer| evaluate
-
-    evaluate --> display
-    end
-
-    one --> search
-    Register --> Login
-    Login --> one
+    
