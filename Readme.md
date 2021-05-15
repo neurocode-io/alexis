@@ -48,44 +48,50 @@ Afterwards the user can send natural queries to the server and is not confied to
 
 1. The user data is stored in a RedisJSON:
 
-```
-{
- firstName: string
- lastName: string
- email: string
- password: string
- pdfs: Array<{id: string, fileName: string}>
-}
-```
+   ```
+   {
+    firstName: string
+    lastName: string
+    email: string
+    password: string
+    pdfs: Array<{id: string, fileName: string}>
+   }
+   ```
 
 2. A RediSearch index is created for each user with:
    
-```
-FT.CREATE ax:idx:<userId> on HASH PREFIX 1 ax:pdfs:<userId> SCHEMA content TEXT PHONETIC dm:en
-```
+   ```
+   FT.CREATE ax:idx:<userId> on HASH PREFIX 1 ax:pdfs:<userId> SCHEMA content TEXT PHONETIC dm:en
+   ```
 
-3. The hash that stores the pdf content is created within a consumer group that reads off an stream called **ax:stream:pdf-processing**. The payload of the stream is
+3. Once a user uploads a PDF we update his pdfs array with RedisJSON:
+   ```
+   JSON.ARRAPPEND ax:users:<userId> .pdfs {id: pdfId, fileName: <uploadedPdf>}
+   ```
+
+
+4. The file upload also triggers an event being written to the **ax:stream:pdf-processing**. The payload of the stream is
    
-```
-{
-  id: string,
-  fileName: string
-}
-```
+   ```
+   {
+     id: string,
+     fileName: string
+   }
+   ```
 
 4. A consumer within the consumer group picks this event off the stream and processess the file and writes the content in a hash:
 
-```
-HSET ax:pdfs:<userId>.<paragraph> content <cleanedParagraphBloc> fileName <pdfFileName>
-```
+   ```
+   HSET ax:pdfs:<userId>.<paragraph> content <cleanedParagraphBlock> fileName <pdfFileName>
+   ```
 
 ## 2. How the data is accessed
 
 1. As mentioned earlier. We have an RediSearch index for each user that indexes this hash and provides lookup capabilities to find relevant content given a user query. We look up content with:
 
-```
-FT.SEARCH ax:idx:<userId> '@content:<userQuery>' SCORER BM25 WITHSCORES LIMIT 0 4
-```
+   ```
+   FT.SEARCH ax:idx:<userId> '@content:<userQuery>' SCORER BM25 WITHSCORES LIMIT 0 4
+   ```
 
 2. The returned content from RediSearch we feed into the AI model that is being surfed with RedisAI!
 
