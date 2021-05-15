@@ -70,7 +70,7 @@ Afterward the user can send natural queries to the server and is not confined to
    ```
 
 
-4. The file upload also triggers an event being written to the **ax:stream:pdf-processing**. The payload of the stream is
+4. The file upload also triggers an event being written to the **ax:stream:pdf-processing** stream. The payload of the stream is
    
    ```
    {
@@ -79,7 +79,7 @@ Afterward the user can send natural queries to the server and is not confined to
    }
    ```
 
-4. A consumer within the consumer group picks this event off the stream and processess the file and writes the content in a hash:
+4. A consumer within a consumer group picks this event off the stream and processess the file and writes the content in a hash:
 
    ```
    HSET ax:pdfs:<userId>.<paragraph> content <cleanedParagraphBlock> fileName <pdfFileName>
