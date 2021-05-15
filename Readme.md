@@ -9,8 +9,8 @@ Alexis extends this basic keyword search by providing a more natural way of sear
 ## Screenshots
 
 
-![Login](docs/1.png)
-![How it works](docs/4.png)
+![Login](https://github.com/NeuroCode-io/alexis/raw/main/docs/1.png)
+![How it works](https://github.com/NeuroCode-io/alexis/raw/main/docs/4.png)
 
 ## Architecture
 
