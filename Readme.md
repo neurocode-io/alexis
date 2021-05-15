@@ -11,32 +11,6 @@ Alexis extends this basic keyword search by providing a more natural way of sear
 ![Login](https://github.com/neurocode-io/alexis/raw/main/docs/login.png)
 ![How it works](https://github.com/neurocode-io/alexis/raw/main/docs/answer.png)
 
-![Login](https://github.com/neurocode-io/alexis/raw/main/docs/login.png)
-![How it works](https://github.com/neurocode-io/alexis/raw/main/docs/answer.png)
-
-## Flowchart
-
-A general overview of what Alexis does can be represented as follows:
-
-![generalOverview](https://github.com/neurocode-io/alexis/raw/main/docs/general-overview.png)
-
-Now let's break down how the *Upload PDFs & Index PDF Content* and the *Answer Query* parts of the flowchart operate! 
-
-### Upload PDFs & Index PDF Content
-
-![uploadAndIndex](https://github.com/neurocode-io/alexis/raw/main/docs/upload-and-index.png)
-
-### Answer Query
-
-![answerQuery](https://github.com/neurocode-io/alexis/raw/main/docs/answer-query.png)
-
-Finally if we put all the pieces back together we would get the following:
-
-### Complete Flowchart
-
-![fullGraph](https://github.com/neurocode-io/alexis/raw/main/docs/full-graph.png)
-
-
 ## Architecture
 
 We break the challenge of finding the correct answer to a user query into two steps:
@@ -65,6 +39,24 @@ Once a user registers and logs into the app. He can start adding documents to hi
 A PDF upload writes an event to redis stream. A consumer from the consumer group picks up the event for async processing. The consumer processes the PDF, applies some cleaning and stores the PDF in a Redis hash that is indexed with RediSearch.
 
 Afterward the user can send natural queries to the server and is not confined to basic keyword search such as "kubernetes deployments", "DDD root aggregate" etc.. but can query with more relevance such as "how do kubernetes deployments get updated?", "What is the role of a root aggregate in DDD"
+
+
+## Flowchart
+
+A general overview of what Alexis does can be represented as follows:
+
+![general overview](https://github.com/neurocode-io/alexis/raw/main/docs/general-overview.png)
+
+Now let's break down how the *Upload PDFs & Index PDF Content* and the *Answer Query* parts of the flowchart operate! 
+
+### Upload PDFs & Index PDF Content
+
+![upload and index](https://github.com/neurocode-io/alexis/raw/main/docs/upload-and-index.png)
+
+### Answer Query
+
+![answer query](https://github.com/neurocode-io/alexis/raw/main/docs/answer-query.png)
+
 
 
 # How it works?
@@ -145,4 +137,3 @@ Redis Insight: http://localhost:8001
 ```
 npm test
 ```
-
