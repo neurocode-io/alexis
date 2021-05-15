@@ -1,0 +1,23 @@
+graph LR
+    subgraph Upload PDFs & Index PDF Content
+    uploadPdf1[upload PDF]
+    uploadPdf2[upload PDF]
+    uploadPdf3[upload PDF]
+    uploadPdf4[upload PDF]
+
+    stream{Redis Stream}
+    consumer[Consumer Group]
+    process[Process PDF]
+    store[Index PDF Content]
+
+    uploadPdf1 -->stream
+    uploadPdf2 -->stream
+    uploadPdf3 -->stream
+    uploadPdf4 -->stream
+
+    stream --> consumer
+    consumer -->|PDF| process
+    process --> store
+    store -.->consumer
+    end
+    

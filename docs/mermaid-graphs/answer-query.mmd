@@ -1,0 +1,42 @@
+graph LR
+    store[Indexed PDFs]
+    store -->search
+    subgraph Answer Query
+    question[Question]
+    search[RediSearch + BM25]
+    ai1[Redis AI]
+    ai2[Redis AI]
+    ai3[Redis AI]
+    ai4[Redis AI]
+    infere1[Run Inference]
+    infere2[Run Inference]
+    infere3[Run Inference]
+    infere4[Run Inference]
+    evaluate{Evaluate Answers}
+    display[Display Answer/Answers]
+
+    search --> |Result 1|ai1
+    search --> |Result 2|ai2
+    search --> |Result 3|ai3
+    search --> |Result 4|ai4
+
+    question --> search
+    
+    question --> ai1
+    question --> ai2
+    question --> ai3
+    question --> ai4
+
+    ai1 --> infere1
+    ai2 --> infere2
+    ai3 --> infere3
+    ai4 --> infere4
+
+    infere1 --> |answer| evaluate
+    infere2 --> |answer| evaluate
+    infere3 --> |answer| evaluate
+    infere4 --> |answer| evaluate
+
+    evaluate --> display
+    end
+    
