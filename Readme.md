@@ -122,8 +122,12 @@ Afterward the user can send natural queries to the server and is not confined to
 
 ## How to run it locally?
 
-You you run the app by running the following commands:
+### Prerequisites
+- Node - v12.x.x
+- NPM - v6.x.x
+- Docker and docker-compose
 
+### Commands
 
 1. npm install
 2. npm run bootstrap 
