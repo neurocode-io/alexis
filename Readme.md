@@ -9,8 +9,31 @@ Alexis extends this basic keyword search by providing a more natural way of sear
 ## Screenshots
 
 
-![Login](https://github.com/NeuroCode-io/alexis/raw/main/docs/1.png)
-![How it works](https://github.com/NeuroCode-io/alexis/raw/main/docs/4.png)
+![Login](https://github.com/neurocode-io/alexis/raw/main/docs/login.png)
+![How it works](https://github.com/neurocode-io/alexis/raw/main/docs/answer.png)
+
+## Flowchart
+
+A general overview of what Alexis does can be represented as follows:
+
+![generalOverview](https://github.com/neurocode-io/alexis/raw/main/docs/general-overview.png)
+
+Now let's break down how the *Upload PDFs & Index PDF Content* and the *Answer Query* parts of the flowchart operate! 
+
+### Upload PDFs & Index PDF Content
+
+![uploadAndIndex](https://github.com/neurocode-io/alexis/raw/main/docs/upload-and-index.png)
+
+### Answer Query
+
+![answerQuery](https://github.com/neurocode-io/alexis/raw/main/docs/answer-query.png)
+
+Finally if we put all the pieces back together we would get the following:
+
+### Complete Flowchart
+
+![fullGraph](https://github.com/neurocode-io/alexis/raw/main/docs/full-graph.png)
+
 
 ## Architecture
 
@@ -99,8 +122,12 @@ Afterward the user can send natural queries to the server and is not confined to
 
 ## How to run it locally?
 
-You you run the app by running the following commands:
+### Prerequisites
+- Node - v12.x.x
+- NPM - v6.x.x
+- Docker and docker-compose
 
+### Commands
 
 1. npm install
 2. npm run bootstrap 
