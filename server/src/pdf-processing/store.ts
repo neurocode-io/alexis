@@ -16,12 +16,7 @@ const getParagraphs = (sentences: string[]) => {
     const words = sentence.trim().split(' ')
 
     if (words.length + paragraph.length > MAX_PARAGRAPH_SIZE) {
-      paragraphs.push(
-        paragraph
-          .join(' ')
-          .slice(0)
-          .trim()
-      )
+      paragraphs.push(paragraph.join(' ').slice(0).trim())
       console.log(paragraph.length)
       paragraph = []
     }

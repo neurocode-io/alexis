@@ -6,7 +6,7 @@ import { redisConfig, serverConfig } from './config'
 import { errorHandler, sessionStore } from './lib/express'
 import logger from './lib/log'
 import pdfRouter from './pdf-processing/handler'
-import userRouter from './users/handler'
+import userRouter from './features/users/router'
 
 const app = express()
 
